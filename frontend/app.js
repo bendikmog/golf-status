@@ -236,7 +236,8 @@ function getOverallStatus(course) {
            !n.includes('treningsgreen') &&
            !n.includes('nærspill') &&
            !n.includes('trening') &&
-           !n.includes('øving')
+           !n.includes('øving') &&
+           !n.includes('range')
   }
 
   const realCourses = courseList.filter(c => isRealCourse(c.name))
@@ -307,12 +308,13 @@ const weatherHTML = buildWeatherSection(course.weather)
 
       <div class="status-section">
         ${courseRows}
+        ${course.status.drivingRange !== 'unknown' ? `
         <div class="status-row">
           <span class="status-label">Driving range:</span>
           <span class="badge ${course.status.drivingRange}">
             ${formatStatus(course.status.drivingRange)}
           </span>
-        </div>
+        </div>` : ''}
     </div>
 
     ${statusNote}

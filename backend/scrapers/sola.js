@@ -7,12 +7,18 @@ async function scrape(url) {
     const page = await browser.newPage()
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 })
 
-    // Click the STATUS link to reveal the table
+    // Click the STATUS link (#drop-status) to reveal the table
     await page.evaluate(() => {
-      const statusLink = [...document.querySelectorAll('a')].find(a => a.innerText.trim() === 'STATUS')
+      const statusLink = document.querySelector('#drop-status') ||
+        [...document.querySelectorAll('a')].find(a => a.innerText.trim() === 'STATUS')
       statusLink?.click()
     })
-    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    // Wait until the status table appears (up to 8 seconds), ignore timeout
+    await page.waitForFunction(() => {
+      return [...document.querySelectorAll('table')]
+        .some(t => t.innerText.includes('STENGT') || t.innerText.includes('ÅPEN'))
+    }, { timeout: 8000 }).catch(() => {})
 
     // Read the status table
     const result = await page.evaluate(() => {
@@ -42,13 +48,11 @@ async function scrape(url) {
       const isClosed = value.includes('STENGT')
       const status   = isOpen ? 'open' : isClosed ? 'closed' : 'unknown'
 
-      if (l.includes('golfbane') || l.includes('bane')) {
-        courses.push({ name: label.replace(/:$/, '').trim(), status })
-      } else if (l.includes('driving range') || l.includes('range')) {
-        // Combine both ranges — open if any is open
-        if (isOpen) drivingRange = 'open'
-        else if (drivingRange === 'unknown' && isClosed) drivingRange = 'closed'
-      }
+      // Skip admin/service rows
+      if (l.includes('klubbkontor') || l.includes('bilutleie')) return
+
+      // Add everything (courses, ranges, treningsområder) to the list
+      courses.push({ name: label.replace(/:$/, '').trim(), status })
     })
 
     return {
