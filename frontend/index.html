@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banestatus - Hvor kan jeg spille?</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- The top banner of the page -->
+    <header>
+        <h1>Banestatus</h1>
+        <p>Live status for norske golfbaner — hvor kan du spille nå?</p>
+  </header>
+
+  <div class="page-content">
+    <nav id="search-bar">
+        <input type="text" id="search-input" placeholder="Søk etter bane..." />
+        <div id="distance-filter">
+          <input type="text" id="postnummer-input" placeholder="Postnummer..." maxlength="4" />
+          <select id="distance-select">
+            <option value="">Avstand</option>
+            <option value="10">10 km</option>
+            <option value="25">25 km</option>
+            <option value="50">50 km</option>
+            <option value="100">100 km</option>
+          </select>
+        </div>
+      </nav>
+      <nav id="filter-bar"></nav>
+
+    <div id="loading">
+      <p>Henter banestatus...</p>
+    </div>
+
+    <div id="error" class="hidden">
+      <p>Kunne ikke hente data. Prøv igjen senere.</p>
+    </div>
+
+    <main id="course-grid"></main>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
