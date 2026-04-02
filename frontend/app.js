@@ -296,7 +296,7 @@ const weatherHTML = buildWeatherSection(course.weather)
   card.innerHTML = `
     <div class="course-card-header">
         ${course.logo
-            ? `<img class="course-logo" src="${course.logo}" alt="${course.name} logo" onerror="this.style.display='none'">`
+            ? `<a href="${course.url}" target="_blank" rel="noopener noreferrer"><img class="course-logo" src="${course.logo}" alt="${course.name} logo" onerror="this.style.display='none'"></a>`
             : ''
         }
         <h2>${course.name}</h2>
@@ -333,11 +333,43 @@ function getWindArrow(degrees) {
   return arrows[index]
 }
 
-// Build the HTML for weather — fixed daytime intervals from 08:00
-function buildWeatherSection(weather) {
-  if (!weather || weather.length === 0) return ''
+// Format a date as "I dag – man 6. apr", "I morgen – tir 7. apr", or "ons 8. apr"
+function formatWeatherDate(dateStr) {
+  const date = new Date(dateStr)
+  const today = new Date()
+  const tomorrow = new Date()
+  tomorrow.setDate(today.getDate() + 1)
 
-  // Fixed 4-hour daytime slots
+  const isSameDay = (a, b) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+
+  const formatted = date.toLocaleDateString('nb-NO', {
+    timeZone: 'Europe/Oslo',
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  })
+
+  if (isSameDay(date, today)) return `I dag – ${formatted}`
+  if (isSameDay(date, tomorrow)) return `I morgen – ${formatted}`
+  return formatted
+}
+
+// Group weather entries by date (Oslo timezone), returns { dateStr -> [entries] }
+function groupWeatherByDay(weather) {
+  const groups = {}
+  for (const entry of weather) {
+    const dateStr = new Date(entry.time).toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' })
+    if (!groups[dateStr]) groups[dateStr] = []
+    groups[dateStr].push(entry)
+  }
+  return groups
+}
+
+// Build a grid of 4 weather cells for a given set of hourly entries
+function buildWeatherGrid(entries) {
   const slots = [
     { label: '08 – 12', fromHour: 8,  toHour: 12 },
     { label: '12 – 16', fromHour: 12, toHour: 16 },
@@ -345,11 +377,10 @@ function buildWeatherSection(weather) {
     { label: '20 – 00', fromHour: 20, toHour: 24 },
   ]
 
-  const cells = slots.map(slot => {
-    // Find the weather data point closest to the middle of this slot
+  return slots.map(slot => {
     const midHour = (slot.fromHour + slot.toHour) / 2
 
-    const best = weather.reduce((closest, hour) => {
+    const best = entries.reduce((closest, hour) => {
       const h = new Date(hour.time).toLocaleString('nb-NO', { timeZone: 'Europe/Oslo', hour: 'numeric', hour12: false })
       const diff = Math.abs(parseInt(h) - midHour)
       const closestDiff = Math.abs(parseInt(new Date(closest.time).toLocaleString('nb-NO', { timeZone: 'Europe/Oslo', hour: 'numeric', hour12: false })) - midHour)
@@ -373,11 +404,29 @@ function buildWeatherSection(weather) {
         </div>
       </div>`
   }).join('')
+}
+
+// Build the HTML for weather — one row per day (today + tomorrow)
+function buildWeatherSection(weather) {
+  if (!weather || weather.length === 0) return ''
+
+  const groups = groupWeatherByDay(weather)
+  const days = Object.keys(groups).sort().slice(0, 2)
+
+  const dayRows = days.map(dateStr => {
+    const label = formatWeatherDate(groups[dateStr][0].time)
+    const grid = buildWeatherGrid(groups[dateStr])
+    return `
+      <div class="weather-day">
+        <div class="weather-date">${label}</div>
+        <div class="weather-grid">${grid}</div>
+      </div>`
+  }).join('')
 
   return `
     <div class="weather-section">
       <div class="weather-label">Værvarsel</div>
-      <div class="weather-grid">${cells}</div>
+      ${dayRows}
     </div>`
 }
 

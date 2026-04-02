@@ -19,33 +19,34 @@ async function getWeather(lat, lon) {
         // The actual forcast data is buried a few levels deep in the response
         const timeseries = response.data.properties.timeseries
 
-        //Grab every other hour for the next 12 hours 
-        const next6Hours = timeseries
-            .filter((entry, index) => index % 2 == 0)
-            .slice(0, 6)
-            .map((entry) => {
+        const now = new Date()
+        const todayStr = now.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' })
+        const tomorrowDate = new Date(now)
+        tomorrowDate.setDate(tomorrowDate.getDate() + 1)
+        const tomorrowStr = tomorrowDate.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' })
 
-            //Pull out the bits we actually care about from each hour
-            const time = entry.time
-            const details = entry.data.instant.details
-            const symbol = entry.data.next_1_hours?.summary?.symbol_code
+        // Keep hourly entries for today and tomorrow, only daytime hours (08-23)
+        const hours = timeseries
+            .filter(entry => {
+                const d = new Date(entry.time)
+                const dateStr = d.toLocaleDateString('sv-SE', { timeZone: 'Europe/Oslo' })
+                const hour = parseInt(d.toLocaleString('nb-NO', { timeZone: 'Europe/Oslo', hour: 'numeric', hour12: false }))
+                return (dateStr === todayStr || dateStr === tomorrowStr) && hour >= 8
+            })
+            .map(entry => {
+                const details = entry.data.instant.details
+                const symbol = entry.data.next_1_hours?.summary?.symbol_code
+                return {
+                    time: entry.time,
+                    temperature: details.air_temperature,
+                    windSpeed: details.wind_speed,
+                    windDirection: details.wind_from_direction,
+                    precipitation: entry.data.next_1_hours?.details?.precipitation_amount ?? 0,
+                    symbol,
+                }
+            })
 
-            return {
-                //Thee time of this forecast period
-                time,
-                // Temperature in celsius
-                temperature: details.air_temperature,
-                // Wind speed in meters per second
-                windSpeed: details.wind_speed,
-                windDirection: details.wind_from_direction,
-                // Chance of precipitation (rain/snow) as a percentage
-                precipitation: entry.data.next_1_hours?.details?.precipitation_amount ?? 0,
-                // A short code describing the weather, e.g. "cloudy", "clearsky_day"
-                symbol,
-            }
-        })
-
-        return next6Hours
+        return hours
     
     } catch (error) {
         console.error(`Weather fetch failed for lat:${lat} lon:${lon}:`, error.message)

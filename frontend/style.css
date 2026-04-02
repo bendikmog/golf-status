@@ -270,6 +270,10 @@ header p {
   padding: 16px 20px;
 }
 
+.course-card-header a {
+  flex-shrink: 0;
+}
+
 .course-logo {
   height: 40px;
   width: auto;
@@ -406,7 +410,21 @@ header p {
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--gray-muted);
-  margin-bottom: 8px;
+  margin-bottom: 2px;
+}
+
+.weather-day {
+  margin-bottom: 10px;
+}
+
+.weather-day:last-child {
+  margin-bottom: 0;
+}
+
+.weather-date {
+  font-size: 0.68rem;
+  color: var(--gray-muted);
+  margin-bottom: 6px;
 }
 
 /* Four equal columns, one per time slot */
