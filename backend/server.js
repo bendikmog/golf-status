@@ -1,4 +1,5 @@
 const express = require('express')
+const compression = require('compression')
 const path = require('path')
 const cron = require('node-cron')
 const courses = require('./courses')
@@ -163,11 +164,12 @@ initialUpdatePromise.then(() => updatePuppeteerCache())
 // MIDDLEWARE - basic setup
 // =====================================
 
+app.use(compression())
 app.use(express.json())
 // Serves frontend files
 app.use(express.static(path.join(__dirname, '..', 'frontend')))
-// Serves logos from logo folder
-app.use('/logos', express.static(path.join(__dirname, '..', 'logos')))
+// Serves logos from logo folder — cache in browser for 7 days
+app.use('/logos', express.static(path.join(__dirname, '..', 'logos'), { maxAge: '7d' }))
 
 // =====================================
 // Endpoints - returns data from cache

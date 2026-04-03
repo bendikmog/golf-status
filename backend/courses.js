@@ -2,7 +2,7 @@ const courses = [
     {
         id: 'aas-gaard',
         name: 'Aas Gaard Golfpak / Hakadal',
-        logo: '/logos/aas-gaard.png',
+        logo: '/logos/aas-gaard.webp',
         url: 'https://www.aasgaardgolfpark.no',
         lat: 60.1311,
         lon: 10.834,
@@ -14,7 +14,7 @@ const courses = [
     {
         id: 'asker',
         name: 'Asker Golfklubb',
-        logo: '/logos/asker.png',
+        logo: '/logos/asker.webp',
         url: 'https://www.askergolf.no',
         lat: 59.8279,
         lon: 10.4388,
@@ -26,7 +26,7 @@ const courses = [
     {
         id: 'askim',
         name: 'Askim Golfklubb',
-        logo: '/logos/askim.png',
+        logo: '/logos/askim.webp',
         url: 'https://askimgk.no/',
         lat: 59.5953,
         lon: 11.1707,
@@ -38,7 +38,7 @@ const courses = [
     {
         id: 'atlungstad',
         name: 'Atlungstad Golf',
-        logo: '/logos/atlungstad.png',
+        logo: '/logos/atlungstad.webp',
         url: 'https://atlungstadgolf.no',
         lat: 60.7586,
         lon: 11.0774,
@@ -50,7 +50,7 @@ const courses = [
     {
         id: 'ballerud',
         name: 'Ballerud Golfklubb',
-        logo: '/logos/ballerud.png',
+        logo: '/logos/ballerud.webp',
         url: 'https://www.ballerud.no',
         lat: 59.9396,
         lon: 10.6297,
@@ -62,7 +62,7 @@ const courses = [
     {
         id: 'bamble',
         name: 'Bamble Golfklubb',
-        logo: '/logos/bamble.png',
+        logo: '/logos/bamble.webp',
         url: 'https://bamblegolfklubb.no',
         lat: 58.9529,
         lon: 9.5891,
@@ -74,7 +74,7 @@ const courses = [
     {
         id: 'borre',
         name: 'Borre Golfklubb',
-        logo: '/logos/borre.png',
+        logo: '/logos/borre.webp',
         url: 'https://www.borregb.no',
         lat: 59.3976,
         lon: 10.4519,
@@ -86,7 +86,7 @@ const courses = [
     {
         id: 'borregaard',
         name: 'Borregaard Golfklubb',
-        logo: '/logos/borregaard.png',
+        logo: '/logos/borregaard.webp',
         url: 'https://borregaardgk.no/',
         lat: 59.2949,
         lon: 11.1288,
@@ -98,7 +98,7 @@ const courses = [
     {
         id: 'baerum',
         name: 'Bærum Golfklubb',
-        logo: '/logos/baerum.png',
+        logo: '/logos/baerum.webp',
         url: 'https://www.bmgk.no',
         lat: 59.8927,
         lon: 10.505,
@@ -110,7 +110,7 @@ const courses = [
     {
         id: 'drammen',
         name: 'Drammen Golfklubb',
-        logo: '/logos/drammen.png',
+        logo: '/logos/drammen.webp',
         url: 'https://www.drammengk.no',
         lat: 59.67,
         lon: 10.2179,
@@ -122,7 +122,7 @@ const courses = [
     {
         id: 'drobak',
         name: 'Drøbak Golfklubb',
-        logo: '/logos/drobak.png',
+        logo: '/logos/drobak.webp',
         url: 'https://www.drobakgolf.no/',
         lat: 59.6755,
         lon: 10.6456,
@@ -134,7 +134,7 @@ const courses = [
     {
         id: 'eiker',
         name: 'Eiker Golfklubb',
-        logo: '/logos/eiker.png',
+        logo: '/logos/eiker.webp',
         url: 'https://www.eikergolf.no',
         lat: 59.736,
         lon: 10.0082,
@@ -146,7 +146,7 @@ const courses = [
     {
         id: 'fana',
         name: 'Fana Golfklubb',
-        logo: '/logos/fana.png',
+        logo: '/logos/fana.webp',
         url: 'https://fanagolf.no',
         lat: 60.2894,
         lon: 5.3073,
@@ -158,7 +158,7 @@ const courses = [
     {
         id: 'fet',
         name: 'Fet Golfklubb',
-        logo: '/logos/fet.png',
+        logo: '/logos/fet.webp',
         url: 'https://www.fetgk.no/',
         lat: 59.9163,
         lon: 11.1692,
@@ -170,7 +170,7 @@ const courses = [
     {
         id: 'gamle fredrikstad',
         name: 'Gamle Fredrikstad Golfklubb',
-        logo: '/logos/gamle_fredrikstad.png',
+        logo: '/logos/gamle_fredrikstad.webp',
         url: 'https://gfgk.no/',
         lat: 59.2013,
         lon: 10.964,
@@ -182,7 +182,7 @@ const courses = [
     {
         id: 'gjerdrum',
         name: 'Gjerdrum Golfklubb',
-        logo: '/logos/gjerdrum.png',
+        logo: '/logos/gjerdrum.webp',
         url: 'https://www.gjerdrumgolfklubb.no/',
         lat: 60.0624,
         lon: 11.0566,
@@ -194,7 +194,7 @@ const courses = [
     {
         id: 'gjersjoen',
         name: 'Gjersjøen Golfklubb',
-        logo: '/logos/gjersjoen.png',
+        logo: '/logos/gjersjoen.webp',
         url: 'https://www.gjersjoengolf.no',
         lat: 59.7456,
         lon: 10.789,
@@ -206,7 +206,7 @@ const courses = [
     {
         id: 'gjoviktoten',
         name: 'Gjøvik og Toten Golfklubb',
-        logo: '/logos/gjovik.png',
+        logo: '/logos/gjovik.webp',
         url: 'https://gtgk.no',
         lat: 60.6997,
         lon: 10.7326,
@@ -218,7 +218,7 @@ const courses = [
     {
         id: 'grenland',
         name: 'Grenland Golfklubb',
-        logo: '/logos/grenland.png',
+        logo: '/logos/grenland.webp',
         url: 'https://grenlandgolf.no',
         lat: 59.268,
         lon: 9.5719,
@@ -230,7 +230,7 @@ const courses = [
     {
         id: 'grini',
         name: 'Grini Golfklubb',
-        logo: '/logos/grini.png',
+        logo: '/logos/grini.webp',
         url: 'https://www.grinigolfklubb.no/',
         lat: 59.9504,
         lon: 10.62265,
@@ -242,7 +242,7 @@ const courses = [
     {
         id: 'groruddalen',
         name: 'Groruddalen Golfklubb',
-        logo: '/logos/groruddalen.png',
+        logo: '/logos/groruddalen.webp',
         url: 'https://www.grorudgk.no',
         lat: 59.9668,
         lon: 10.91338,
@@ -254,7 +254,7 @@ const courses = [
     {
         id: 'gronmo',
         name: 'Grønmo Golfklubb',
-        logo: '/logos/gronmo.png',
+        logo: '/logos/gronmo.webp',
         url: 'https://www.gronmogk.no/banen/driving-rangen/',
         lat: 59.8431,
         lon: 10.857,
@@ -266,7 +266,7 @@ const courses = [
     {
         id: 'haga',
         name: 'Haga Golfklubb',
-        logo: '/logos/haga.png',
+        logo: '/logos/haga.webp',
         url: 'https://www.hagagolf.no/',
         lat: 59.9418,
         lon: 10.5766,
@@ -278,7 +278,7 @@ const courses = [
     {
         id: 'halden',
         name: 'Halden Golfklubb',
-        logo: '/logos/halden.png',
+        logo: '/logos/halden.webp',
         url: 'https://haldengk.no/start/banen/banestatus',
         lat: 59.1182,
         lon: 11.3870,
@@ -290,7 +290,7 @@ const courses = [
     {
         id: 'hallingdal',
         name: 'Hallingdal Golfklubb',
-        logo: '/logos/hallingdal.png',
+        logo: '/logos/hallingdal.webp',
         url: 'https://www.hallingdalgolfklubb.no',
         lat: 60.701,
         lon: 8.3552,
@@ -302,7 +302,7 @@ const courses = [
     {
         id: 'hauger',
         name: 'Hauger Golfklubb',
-        logo: '/logos/hauger.png',
+        logo: '/logos/hauger.webp',
         url: 'https://www.hauger-golfklubb.no/',
         lat: 60.0018,
         lon: 10.981,
@@ -314,7 +314,7 @@ const courses = [
     {
         id: 'hemsedal',
         name: 'Hemsedal Golfklubb',
-        logo: '/logos/hemsedal.png',
+        logo: '/logos/hemsedal.webp',
         url: 'https://www.hemsedalgolfklubb.no',
         lat: 60.8676,
         lon: 8.5700,
@@ -326,7 +326,7 @@ const courses = [
     {
         id: 'hof',
         name: 'Hof Golfklubb',
-        logo: '/logos/hof.png',
+        logo: '/logos/hof.webp',
         url: 'https://hofgolfklubb.no',
         lat: 59.5395,
         lon: 10.084,
@@ -338,7 +338,7 @@ const courses = [
     {
         id: 'holtsmark',
         name: 'Holtsmark Golfklubb',
-        logo: '/logos/holtsmark.png',
+        logo: '/logos/holtsmark.webp',
         url: 'https://holtsmarkgolf.no/',
         lat: 59.8706,
         lon: 10.2584,
@@ -350,7 +350,7 @@ const courses = [
     {
         id: 'huseby',
         name: 'Huseby & Hankø Golfklubb',
-        logo: '/logos/huseby.png',
+        logo: '/logos/huseby.webp',
         url: 'https://www.hhg.no',
         lat: 59.2666,
         lon: 10.7959,
@@ -362,7 +362,7 @@ const courses = [
     {
         id: 'hvaler',
         name: 'Hvaler Golfklubb',
-        logo: '/logos/hvaler.png',
+        logo: '/logos/hvaler.webp',
         url: 'https://www.hvalergk.no',
         lat: 59.054,
         lon: 11.0202,
@@ -374,7 +374,7 @@ const courses = [
     {
         id: 'kjekstad',
         name: 'Kjekstad Golfklubb',
-        logo: '/logos/kjekstad.png',
+        logo: '/logos/kjekstad.webp',
         url: 'https://www.kjekstad-gk.no',
         lat: 59.7502,
         lon: 10.3722,
@@ -386,7 +386,7 @@ const courses = [
     {
         id: 'kongsberg',
         name: 'Kongsberg Golfklubb',
-        logo: '/logos/kongsberg.png',
+        logo: '/logos/kongsberg.webp',
         url: 'https://kongsberggolf.no/banen/banestatus/',
         lat: 59.6154,
         lon: 9.7126,
@@ -398,7 +398,7 @@ const courses = [
     {
         id: 'kongsvinger',
         name: 'Kongsvinger Golfklubb',
-        logo: '/logos/kongsvinger.png',
+        logo: '/logos/kongsvinger.webp',
         url: 'https://kongsvingergolf.no',
         lat: 60.1291,
         lon: 12.0509,
@@ -410,7 +410,7 @@ const courses = [
     {
         id: 'kragero',
         name: 'Kragerø Golfklubb',
-        logo: '/logos/kragero.png',
+        logo: '/logos/kragero.webp',
         url: 'https://kragk.no',
         lat: 58.9528,
         lon: 9.1111,
@@ -422,7 +422,7 @@ const courses = [
     {
         id: 'krokhol',
         name: 'Krokhol Golfklubb',
-        logo: '/logos/krokhol.png',
+        logo: '/logos/krokhol.webp',
         url: 'https://www.krokhol.no/banen/banestatus/',
         lat: 59.78,
         lon: 10.91,
@@ -434,7 +434,7 @@ const courses = [
     {
         id: 'larvik',
         name: 'Larvik Golfklubb',
-        logo: '/logos/larvik.png',
+        logo: '/logos/larvik.webp',
         url: 'https://larvikgolf.no',
         lat: 59.033,
         lon: 10.0071,
@@ -446,7 +446,7 @@ const courses = [
     {
         id: 'lillestrom',
         name: 'Lillestrøm Golfklubb',
-        logo: '/logos/lillestrom.png',
+        logo: '/logos/lillestrom.webp',
         url: 'https://lilgk.no/',
         lat: 59.9558,
         lon: 11.0691,
@@ -458,7 +458,7 @@ const courses = [
     {
         id: 'lofoten',
         name: 'Lofoten Links',
-        logo: '/logos/lofoten.png',
+        logo: '/logos/lofoten.webp',
         url: 'https://www.lofotenlinks.no/golf/apninstider/',
         lat: 68.3403,
         lon: 14.1256,
@@ -470,7 +470,7 @@ const courses = [
     {
         id: 'lommedalen',
         name: 'Lommedalen Golfklubb',
-        logo: '/logos/lommedalen.png',
+        logo: '/logos/lommedalen.webp',
         url: 'https://www.lommedalengk.no/nyheter',
         lat: 59.98,
         lon: 10.49,
@@ -482,7 +482,7 @@ const courses = [
     {
         id: 'losby',
         name: 'Losby Golfklubb',
-        logo: '/logos/losby.png',
+        logo: '/logos/losby.webp',
         url: 'https://www.losby.no',
         lat: 59.91,
         lon: 10.99,
@@ -494,7 +494,7 @@ const courses = [
     {
         id: 'miklagard',
         name: 'Miklagard Golfklubb',
-        logo: '/logos/miklagard.png',
+        logo: '/logos/miklagard.webp',
         url: 'https://miklagardgolf.no/',
         lat: 60.0784,
         lon: 11.1522,
@@ -506,7 +506,7 @@ const courses = [
     {
         id: 'mjosen',
         name: 'Mjøsen Golfklubb',
-        logo: '/logos/mjosen.png',
+        logo: '/logos/mjosen.webp',
         url: 'https://msgk.no/',
         lat: 60.9477,
         lon: 10.6996,
@@ -518,7 +518,7 @@ const courses = [
     {
         id: 'evje',
         name: 'Moss og Rygge Golfklubb (Evje Golfpark)',
-        logo: '/logos/evje.png',
+        logo: '/logos/evje.webp',
         url: 'https://www.evjegolf.no',
         lat: 59.3687,
         lon: 10.6784,
@@ -530,7 +530,7 @@ const courses = [
     {
         id: 'mork',
         name: 'Mørk Golfklubb',
-        logo: '/logos/mork.png',
+        logo: '/logos/mork.webp',
         url: 'https://www.morkgolf.no',
         lat: 59.5318,
         lon: 10.9979,
@@ -542,7 +542,7 @@ const courses = [
     {
         id: 'nes',
         name: 'Nes Golfklubb (Vormsund)',
-        logo: '/logos/nes.png',
+        logo: '/logos/nes.webp',
         url: 'https://nesgolf.no/',
         lat: 60.1619,
         lon: 11.4215,
@@ -554,7 +554,7 @@ const courses = [
     {
         id: 'nesbyen',
         name: 'Nesbyen Golfklubb',
-        logo: '/logos/nesbyen.png',
+        logo: '/logos/nesbyen.webp',
         url: 'https://nesfjellet.no/nb/golfbanen-ny',
         lat: 60.534,
         lon: 9.0221,
@@ -566,7 +566,7 @@ const courses = [
     {
         id: 'norefjell',
         name: 'Norefjell Golfklubb',
-        logo: '/logos/norefjell.png',
+        logo: '/logos/norefjell.webp',
         url: 'https://www.norefjell-golf.no/innstillinger/banestatus',
         lat: 60.1908,
         lon: 9.6039,
@@ -578,7 +578,7 @@ const courses = [
     {
         id: 'norsjo',
         name: 'Norsjø Golfklubb',
-        logo: '/logos/norsjo.png',
+        logo: '/logos/norsjo.webp',
         url: 'https://golfparken.no',
         lat: 59.3016,
         lon: 9.2471,
@@ -590,7 +590,7 @@ const courses = [
     {
         id: 'notteroy',
         name: 'Nøtterøy Golfklubb',
-        logo: '/logos/notteroy.png',
+        logo: '/logos/notteroy.webp',
         url: 'https://notteroygolf.no/banestatus/',
         lat: 59.2259,
         lon: 10.3949,
@@ -602,7 +602,7 @@ const courses = [
     {
         id: 'onsoy',
         name: 'Onsøy Golfklubb',
-        logo: '/logos/onsoy.png',
+        logo: '/logos/onsoy.webp',
         url: 'https://www.onsoygolfklubb.no',
         lat: 59.2167,
         lon: 10.8167,
@@ -614,7 +614,7 @@ const courses = [
     {
         id: 'oppegard',
         name: 'Oppegård Golfklubb',
-        logo: '/logos/nes.png',
+        logo: '/logos/nes.webp',
         url: 'https://oppegardgk.no/',
         lat: 59.777,
         lon: 10.8126,
@@ -626,7 +626,7 @@ const courses = [
     {
         id: 'oslo',
         name: 'Oslo Golfklubb',
-        logo: '/logos/oslo.png',
+        logo: '/logos/oslo.webp',
         url: 'https://www.oslogk.no/dagens-status',
         lat: 59.9622,
         lon: 10.6362,
@@ -638,7 +638,7 @@ const courses = [
     {
         id: 'ringerike',
         name: 'Ringerike Golfklubb',
-        logo: '/logos/ringerike.png',
+        logo: '/logos/ringerike.webp',
         url: 'https://www.ringerikegk.no',
         lat: 60.3484,
         lon: 10.0988,
@@ -650,7 +650,7 @@ const courses = [
     {
         id: 'rjukan',
         name: 'Rjukan Golfklubb',
-        logo: '/logos/rjukan.png',
+        logo: '/logos/rjukan.webp',
         url: 'https://www.rjukangolf.no/banen/',
         lat: 59.9284,
         lon: 8.7598,
@@ -662,7 +662,7 @@ const courses = [
     {
         id: 'romerike',
         name: 'Romerike Golfklubb',
-        logo: '/logos/romerike.png',
+        logo: '/logos/romerike.webp',
         url: 'https://romerikegk.no/blogs/banestatus',
         lat: 59.9372,
         lon: 11.1143,
@@ -674,7 +674,7 @@ const courses = [
     {
         id: 'sande',
         name: 'Sande Golfklubb',
-        logo: '/logos/sande.png',
+        logo: '/logos/sande.webp',
         url: 'https://www.sandegk.no',
         lat: 59.6121,
         lon: 10.215,
@@ -686,7 +686,7 @@ const courses = [
     {
         id: 'sandefjord',
         name: 'Sandefjord Golfklubb',
-        logo: '/logos/sandefjord.png',
+        logo: '/logos/sandefjord.webp',
         url: 'https://www.sandefjordgolf.no/banen/banestatus/',
         lat: 59.1064,
         lon: 10.1752,
@@ -698,7 +698,7 @@ const courses = [
     {
         id: 'sandnes',
         name: 'Sandnes Golfklubb',
-        logo: '/logos/sandnes.png',
+        logo: '/logos/sandnes.webp',
         url: 'https://sandnesgolfklubb.no/',
         lat: 58.8717,
         lon: 5.6738,
@@ -710,7 +710,7 @@ const courses = [
     {
         id: 'ski',
         name: 'Ski Golfklubb',
-        logo: '/logos/ski.png',
+        logo: '/logos/ski.webp',
         url: 'https://www.skigk.no',
         lat: 59.72,
         lon: 10.83,
@@ -722,7 +722,7 @@ const courses = [
     {
         id: 'skjeberg',
         name: 'Skjeberg Golfklubb',
-        logo: '/logos/skjeberg.png',
+        logo: '/logos/skjeberg.webp',
         url: 'https://www.skjeberggk.no',
         lat: 59.2756,
         lon: 11.1954,
@@ -734,7 +734,7 @@ const courses = [
     {
         id: 'sola',
         name: 'Sola Golfklubb',
-        logo: '/logos/sola.png',
+        logo: '/logos/sola.webp',
         url: 'https://solagk.no/',
         lat: 58.8847,
         lon: 5.6124,
@@ -746,7 +746,7 @@ const courses = [
     {
         id: 'solum',
         name: 'Solum Golfklubb',
-        logo: '/logos/solum.png',
+        logo: '/logos/solum.webp',
         url: 'https://www.solumgolf.club',
         lat: 59.4675,
         lon: 10.3106,
@@ -758,7 +758,7 @@ const courses = [
     {
         id: 'soon',
         name: 'Soon Golfklubb',
-        logo: '/logos/soon.png',
+        logo: '/logos/soon.webp',
         url: 'https://soongolf.no',
         lat: 59.5333,
         lon: 10.6803,
@@ -770,7 +770,7 @@ const courses = [
     {
         id: 'stavanger',
         name: 'Stavanger Golfklubb',
-        logo: '/logos/stavanger.png',
+        logo: '/logos/stavanger.webp',
         url: 'https://www.sgk.no/banestatus/',
         lat: 58.958,
         lon: 5.644,
@@ -782,7 +782,7 @@ const courses = [
     {
         id: 'tjome',
         name: 'Tjøme Golfklubb',
-        logo: '/logos/tjome.png',
+        logo: '/logos/tjome.webp',
         url: 'https://www.tjomegolfklubb.no',
         lat: 59.1114,
         lon: 10.3886,
@@ -794,7 +794,7 @@ const courses = [
     {
         id: 'tyrifjord',
         name: 'Tyrifjord Golfklubb',
-        logo: '/logos/tyrifjord.png',
+        logo: '/logos/tyrifjord.webp',
         url: 'https://www.tyrifjord-golfklubb.no',
         lat: 60.0521,
         lon: 10.2641,
@@ -806,7 +806,7 @@ const courses = [
     {
         id: 'tonsberg',
         name: 'Tønsberg Golfklubb',
-        logo: '/logos/tonsberg.png',
+        logo: '/logos/tonsberg.webp',
         url: 'https://tonsberggolfklubb.no',
         lat: 59.3333,
         lon: 10.3035,
@@ -818,7 +818,7 @@ const courses = [
     {
         id: 'ullensaker',
         name: 'Ullensaker Golfklubb',
-        logo: '/logos/ullensaker.png',
+        logo: '/logos/ullensaker.webp',
         url: 'https://www.ugk.no/banestatus/',
         lat: 60.1517,
         lon: 11.0955,
@@ -830,7 +830,7 @@ const courses = [
     {
         id: 'vestfold',
         name: 'Vestfold Golfklubb',
-        logo: '/logos/vestfold.png',
+        logo: '/logos/vestfold.webp',
         url: 'https://vgk.no',
         lat: 59.2436,
         lon: 10.3518,
@@ -842,7 +842,7 @@ const courses = [
     {
         id: 'vradal',
         name: 'Vrådal Golfklubb',
-        logo: '/logos/vradal.png',
+        logo: '/logos/vradal.webp',
         url: 'https://www.vradalgolfklubb.no',
         lat: 59.317,
         lon: 8.4756,
@@ -854,7 +854,7 @@ const courses = [
     {
         id: 'ostmarka',
         name: 'Østmarka Golfklubb',
-        logo: '/logos/ostmarka.png',
+        logo: '/logos/ostmarka.webp',
         url: 'https://ostmarkagolf.no',
         lat: 59.7234,
         lon: 10.9234,

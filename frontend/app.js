@@ -313,7 +313,7 @@ const weatherHTML = buildWeatherSection(course.weather)
   card.innerHTML = `
     <div class="course-card-header">
         ${course.logo
-            ? `<a href="${course.url}" target="_blank" rel="noopener noreferrer"><img class="course-logo" src="${course.logo}" alt="${course.name} logo" onerror="this.style.display='none'"></a>`
+            ? `<a href="${course.url}" target="_blank" rel="noopener noreferrer"><img class="course-logo" src="${course.logo}" alt="${course.name} logo" loading="lazy" onerror="this.style.display='none'"></a>`
             : ''
         }
         <h2>${course.name}</h2>
@@ -413,7 +413,7 @@ function buildWeatherGrid(entries) {
       <div class="weather-cell">
         <div class="weather-cell-time">${slot.label}</div>
         <div class="weather-cell-main">
-          <img src="${iconUrl}" class="weather-cell-icon" alt="${best.symbol}" />
+          <img src="${iconUrl}" class="weather-cell-icon" alt="${best.symbol}" loading="lazy" decoding="async" />
           <span class="weather-cell-temp">${Math.round(best.temperature)}°</span>
         </div>
         <div class="weather-cell-details">
