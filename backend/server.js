@@ -154,7 +154,10 @@ cron.schedule('0 8,23 * * *', () => {
 
 // Store the initial update promise so concurrent cold-start requests
 // can await it instead of triggering duplicate fetches
-const initialUpdatePromise = updateFull()
+// Wait only for the fast scrapers on cold start — users get data as soon as possible.
+// Puppeteer scrapers run in the background and update the cache when ready.
+const initialUpdatePromise = updateCache()
+initialUpdatePromise.then(() => updatePuppeteerCache())
 
 // =====================================
 // MIDDLEWARE - basic setup

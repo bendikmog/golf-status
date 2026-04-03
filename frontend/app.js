@@ -15,50 +15,51 @@ document.addEventListener('DOMContentLoaded',() => {
 
 // Fetch all course data from our backend
 async function fetchCourses() {
-    try {
-        // Show loading while waiting
-        showLoading(true)
+    const MAX_RETRIES = 5
+    const RETRY_DELAY_MS = 4000
 
-        // Ask backend for data
-        const response = await fetch(API_URL)
+    showLoading(true)
 
-        // Convert the response to a JavaScript object
-        const data = await response.json()
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const response = await fetch(API_URL)
+            const data = await response.json()
 
-        // Data is now in data.courses - not directly in data
-        const courses = data.courses
+            const courses = data.courses
+            allCourses = courses
 
-        // Save courses so the filter can use them later
-        allCourses = courses
+            buildFilterButtons(courses)
+            renderCourses(courses)
 
-        //Build the filter buttons based on what regions exist
-        buildFilterButtons(courses)
+            // Show last updated timestamp
+            if (data.meta?.cachedAt) {
+                const updated = new Date(data.meta.cachedAt)
+                const formatted = updated.toLocaleString('nb-NO', {
+                    timeZone: 'Europe/Oslo',
+                    day: 'numeric',
+                    month: 'long',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                })
+                const el = document.getElementById('last-updated')
+                if (el) el.textContent = `Sist oppdatert: ${formatted}`
+            }
 
-        // Display the cards
-        renderCourses(courses)
+            showLoading(false)
+            return
 
-        // Show last updated timestamp
-        if (data.meta?.cachedAt) {
-            const updated = new Date(data.meta.cachedAt)
-            const formatted = updated.toLocaleString('nb-NO', {
-                timeZone: 'Europe/Oslo',
-                day: 'numeric',
-                month: 'long',
-                hour: '2-digit',
-                minute: '2-digit',
-            })
-            const el = document.getElementById('last-updated')
-            if (el) el.textContent = `Sist oppdatert: ${formatted}`
+        } catch (error) {
+            console.error(`Forsøk ${attempt} feilet:`, error)
+
+            if (attempt < MAX_RETRIES) {
+                // Server starter trolig opp — vent og prøv igjen
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS))
+            } else {
+                // Alle forsøk brukt opp — vis feilmelding
+                showLoading(false)
+                document.getElementById('error').classList.remove('hidden')
+            }
         }
-
-        // Hide the loading message
-        showLoading(false)
-
-    } catch (error) {
-        // Something went wrong - show the error message
-        console.error('Failed tot fetch courses', error)
-        showLoading(false)
-        document.getElementById('error').classList.remove('hidden')
     }
 }
 
@@ -238,6 +239,7 @@ function renderCourses(courses) {
 
 // Evaluate status for card - used in colored circle
 function getOverallStatus(course) {
+  if (!course.status?.courses) return 'yellow'
   const courseList = course.status.courses
 
   // Only "real" courses count for green status
@@ -280,7 +282,7 @@ function buildCard(course) {
   const overallStatus = getOverallStatus(course)
 
   // Build course status rows
-  const courseRows = course.status.courses.length > 0
+  const courseRows = course.status?.courses?.length > 0
     ? course.status.courses.map(c => `
         <div class="status-row">
           <span class="status-label">${c.name}</span>
@@ -322,7 +324,7 @@ const weatherHTML = buildWeatherSection(course.weather)
 
       <div class="status-section">
         ${courseRows}
-        ${course.status.drivingRange !== null ? `
+        ${course.status?.drivingRange !== null && course.status?.drivingRange !== undefined ? `
         <div class="status-row">
           <span class="status-label">Driving range:</span>
           <span class="badge ${course.status.drivingRange}">
