@@ -1,10 +1,10 @@
-const puppeteer = require('puppeteer')
+const { getBrowser } = require('./browser')
 
 async function scrape(url) {
-  let browser
+  let page
   try {
-    browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] })
-    const page = await browser.newPage()
+    const browser = await getBrowser()
+    page = await browser.newPage()
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 })
 
     // Click the STATUS link (#drop-status) to reveal the table
@@ -40,7 +40,7 @@ async function scrape(url) {
     if (!result) return { courses: [], drivingRange: 'unknown', statusText: null }
 
     const courses = []
-    let drivingRange = 'unknown'
+    let drivingRange = null
 
     result.forEach(({ label, value }) => {
       const l = label.toLowerCase()
@@ -65,7 +65,7 @@ async function scrape(url) {
     console.error(`Sola scrape failed for ${url}:`, error.message)
     return { courses: [], drivingRange: 'unknown', statusText: null }
   } finally {
-    if (browser) await browser.close()
+    if (page) await page.close().catch(() => {})
   }
 }
 

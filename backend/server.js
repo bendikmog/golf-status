@@ -16,37 +16,35 @@ const PORT = 3000
 // CACHE - store data in server memory
 // ===================================
 
-// cachedData holds last result from scrape
+// Puppeteer scrapers are slow - split them from the rest so main cache can be served faster
+const PUPPETEER_METHODS = new Set(['sola', 'coursecond-widget'])
+
+// cachedData holds last result from scrape (all courses merged)
 let cachedData = null
 
 // cachedTime holds the timestamp of last update
 let cachedTime = null
 
+// Tracks whether an update is currently running
+let isUpdating = false
+
+// Per-course cache for Puppeteer results so they survive between main updates
+let puppeteerCacheById = {}
+
 // =====================================
-// SCRAPING - fetches fresh data from all courses
+// SCRAPING - fetches fresh data from a list of courses
 // =====================================
 
-async function fetchAllCourses() {
-    console.log('Fetching data from all courses...')
-
-    const results = await Promise.all(
-        courses.map(async (course) => {
+async function fetchCoursesData(courseList) {
+    return Promise.all(
+        courseList.map(async (course) => {
             const [status, weather] = await Promise.all([
                 scrapeCourse(course),
                 getWeather(course.lat, course.lon),
             ])
-
-            return {
-                ...course,
-                status,
-                weather,
-            }
+            return { ...course, status, weather }
         })
     )
-
-    console.log('Fetched all courses!')
-    return results
-    
 }
 
 // =====================================
@@ -54,17 +52,55 @@ async function fetchAllCourses() {
 // =====================================
 
 async function updateCache() {
+    // Prevent overlapping updates
+    if (isUpdating) return
+    isUpdating = true
+
     try {
-        // Fetch fresh data
-        const freshData = await fetchAllCourses()
+        const mainCourses     = courses.filter(c => !PUPPETEER_METHODS.has(c.scrapeMethod))
+        const puppeteerCourses = courses.filter(c =>  PUPPETEER_METHODS.has(c.scrapeMethod))
 
-        // Store in cache with timestamp
-        cachedData = freshData
+        // --- Step 1: fast scrapers ---
+        console.log('Fetching main scrapers...')
+        const mainResults = await fetchCoursesData(mainCourses)
+
+        // Build a lookup so we can serve the cache in original course order
+        const resultById = {}
+        mainResults.forEach(r => { resultById[r.id] = r })
+
+        // Fill in Puppeteer slots with previously cached data (or null placeholder)
+        puppeteerCourses.forEach(course => {
+            if (puppeteerCacheById[course.id]) {
+                resultById[course.id] = { ...course, ...puppeteerCacheById[course.id] }
+            } else {
+                resultById[course.id] = { ...course, status: null, weather: null }
+            }
+        })
+
+        // Serve partial cache immediately — users don't wait for Puppeteer
+        cachedData = courses.map(c => resultById[c.id]).filter(Boolean)
         cachedTime = Date.now()
+        console.log('Main scrapers done — partial cache ready')
 
-        console.log(`Cache updated at ${new Date().toLocaleTimeString('no-NO')}`)
+        // --- Step 2: slow Puppeteer scrapers ---
+        console.log('Fetching Puppeteer scrapers...')
+        const puppeteerResults = await fetchCoursesData(puppeteerCourses)
+
+        // Persist Puppeteer results so they survive the next main-only update
+        puppeteerResults.forEach(r => {
+            puppeteerCacheById[r.id] = { status: r.status, weather: r.weather }
+            resultById[r.id] = r
+        })
+
+        // Replace partial cache with fully updated data
+        cachedData = courses.map(c => resultById[c.id]).filter(Boolean)
+        cachedTime = Date.now()
+        console.log(`Cache fully updated at ${new Date().toLocaleTimeString('no-NO')}`)
+
     } catch (error) {
         console.error('Cache update failed:', error.message)
+    } finally {
+        isUpdating = false
     }
 }
 
@@ -88,7 +124,9 @@ cron.schedule('0 7-10 * * *', () => {
 // RUN - fill cache with data as server starts
 // =====================================
 
-updateCache()
+// Store the initial update promise so concurrent cold-start requests
+// can await it instead of triggering duplicate fetches
+const initialUpdatePromise = updateCache()
 
 // =====================================
 // MIDDLEWARE - basic setup
@@ -103,13 +141,13 @@ app.use('/logos', express.static(path.join(__dirname, '..', 'logos')))
 // =====================================
 // Endpoints - returns data from cache
 // =====================================
-app.get('/api/courses', async (req, res) => {
+app.get('/api/courses', async (_req, res) => {
     try{
-        // If cache is empty (first update not ready yet)
-        // - wait for data
+        // On cold start: wait for the initial (main) scrapers to finish
+        // After that, always return whatever is in cache — never block on Puppeteer
         if (!cachedData) {
-            console.log('Cache empty - fetching data now...')
-            await updateCache()
+            console.log('Cache empty - waiting for initial data...')
+            await initialUpdatePromise
         }
 
         // Add cache-age in response to see age of data
@@ -122,6 +160,7 @@ app.get('/api/courses', async (req, res) => {
             meta: {
                 cachedAt: new Date(cachedTime).toISOString(),
                 cacheAgeSeconds,
+                isUpdating,
             }
         })
     } catch (error) {
@@ -152,7 +191,7 @@ app.get('/api/postnummer/:nr', async (req, res) => {
         if (!adresser || adresser.length === 0) {
             return res.status(404).json({error: 'Postnummer ikke funnet'})
         }
-    
+
 
     const { lat, lon } = adresser[0].representasjonspunkt
     const poststed = adresser[0].poststed

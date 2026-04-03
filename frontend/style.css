@@ -538,3 +538,29 @@ header p {
     padding: 5px 12px;
   }
 }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.site-footer {
+  margin-top: 48px;
+  padding: 24px 16px;
+  border-top: 1px solid var(--gray-border);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer-meta {
+  font-size: 0.8rem;
+  color: var(--gray-muted);
+}
+
+.footer-disclaimer {
+  font-size: 0.78rem;
+  color: var(--gray-muted);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}

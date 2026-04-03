@@ -37,6 +37,20 @@ async function fetchCourses() {
         // Display the cards
         renderCourses(courses)
 
+        // Show last updated timestamp
+        if (data.meta?.cachedAt) {
+            const updated = new Date(data.meta.cachedAt)
+            const formatted = updated.toLocaleString('nb-NO', {
+                timeZone: 'Europe/Oslo',
+                day: 'numeric',
+                month: 'long',
+                hour: '2-digit',
+                minute: '2-digit',
+            })
+            const el = document.getElementById('last-updated')
+            if (el) el.textContent = `Sist oppdatert: ${formatted}`
+        }
+
         // Hide the loading message
         showLoading(false)
 
@@ -308,7 +322,7 @@ const weatherHTML = buildWeatherSection(course.weather)
 
       <div class="status-section">
         ${courseRows}
-        ${course.status.drivingRange !== 'unknown' ? `
+        ${course.status.drivingRange !== null ? `
         <div class="status-row">
           <span class="status-label">Driving range:</span>
           <span class="badge ${course.status.drivingRange}">
