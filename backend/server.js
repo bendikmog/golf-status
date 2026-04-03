@@ -80,22 +80,7 @@ async function updateCache() {
         // Serve partial cache immediately — users don't wait for Puppeteer
         cachedData = courses.map(c => resultById[c.id]).filter(Boolean)
         cachedTime = Date.now()
-        console.log('Main scrapers done — partial cache ready')
-
-        // --- Step 2: slow Puppeteer scrapers ---
-        console.log('Fetching Puppeteer scrapers...')
-        const puppeteerResults = await fetchCoursesData(puppeteerCourses)
-
-        // Persist Puppeteer results so they survive the next main-only update
-        puppeteerResults.forEach(r => {
-            puppeteerCacheById[r.id] = { status: r.status, weather: r.weather }
-            resultById[r.id] = r
-        })
-
-        // Replace partial cache with fully updated data
-        cachedData = courses.map(c => resultById[c.id]).filter(Boolean)
-        cachedTime = Date.now()
-        console.log(`Cache fully updated at ${new Date().toLocaleTimeString('no-NO')}`)
+        console.log(`Main scrapers done — cache ready at ${new Date().toLocaleTimeString('no-NO')}`)
 
     } catch (error) {
         console.error('Cache update failed:', error.message)
@@ -104,21 +89,64 @@ async function updateCache() {
     }
 }
 
+// Full update: main scrapers first, then Puppeteer
+async function updateFull() {
+    await updateCache()
+    await updatePuppeteerCache()
+}
+
+// Fetches only Puppeteer courses and merges results into cachedData.
+// Can be called standalone (from its own cron) or from updateCache().
+async function updatePuppeteerCache() {
+    if (isUpdating) return
+    isUpdating = true
+
+    try {
+        // Rebuild resultById from current cache so we can merge cleanly
+        const resultById = {}
+        if (cachedData) cachedData.forEach(r => { resultById[r.id] = r })
+
+        await runPuppeteerUpdate(resultById)
+    } catch (error) {
+        console.error('Puppeteer cache update failed:', error.message)
+    } finally {
+        isUpdating = false
+    }
+}
+
+// Shared helper: fetches Puppeteer courses, updates puppeteerCacheById and cachedData
+async function runPuppeteerUpdate(resultById) {
+    const puppeteerCourses = courses.filter(c => PUPPETEER_METHODS.has(c.scrapeMethod))
+
+    console.log('Fetching Puppeteer scrapers...')
+    const puppeteerResults = await fetchCoursesData(puppeteerCourses)
+
+    // Persist results so they survive the next main-only update
+    puppeteerResults.forEach(r => {
+        puppeteerCacheById[r.id] = { status: r.status, weather: r.weather }
+        resultById[r.id] = r
+    })
+
+    cachedData = courses.map(c => resultById[c.id]).filter(Boolean)
+    cachedTime = Date.now()
+    console.log(`Puppeteer scrapers done at ${new Date().toLocaleTimeString('no-NO')}`)
+}
+
 // =====================================
 // PLANNED UPDATES - cron jobs
 // =====================================
 
-// Update at 23:00 every night
-cron.schedule('0 23 * * *', () => {
-    console.log('Nightly update starting...')
+// Main scrapers only: 07:00, 09:00, 10:00
+cron.schedule('0 7,9,10 * * *', () => {
+    console.log('Main update starting...')
     updateCache()
-}, {timezone: 'Europe/Oslo' })
+}, { timezone: 'Europe/Oslo' })
 
-// Update at 07:00, 08:00, 09:00, 10:00, every morning
-cron.schedule('0 7-10 * * *', () => {
-    console.log('Morning at 07 update starting...')
-    updateCache()
-}, {timezone: 'Europe/Oslo' })
+// Full update (main + Puppeteer): 08:00 and 23:00
+cron.schedule('0 8,23 * * *', () => {
+    console.log('Full update starting...')
+    updateFull()
+}, { timezone: 'Europe/Oslo' })
 
 // =====================================
 // RUN - fill cache with data as server starts
@@ -126,7 +154,7 @@ cron.schedule('0 7-10 * * *', () => {
 
 // Store the initial update promise so concurrent cold-start requests
 // can await it instead of triggering duplicate fetches
-const initialUpdatePromise = updateCache()
+const initialUpdatePromise = updateFull()
 
 // =====================================
 // MIDDLEWARE - basic setup
