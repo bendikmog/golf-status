@@ -346,7 +346,7 @@ const weatherHTML = buildWeatherSection(course.weather)
 // Convert wind direction degrees to an arrow pointing the direction wind comes FROM
 function getWindArrow(degrees) {
   if (degrees === undefined || degrees === null) return '↑'
-  const arrows = ['↓','↙','←','↖','↑','↗','→','↘']
+  const arrows = ['↓\uFE0E','↙\uFE0E','←\uFE0E','↖\uFE0E','↑\uFE0E','↗\uFE0E','→\uFE0E','↘\uFE0E']
   const index = Math.round(((degrees + 180) % 360) / 45) % 8
   return arrows[index]
 }
