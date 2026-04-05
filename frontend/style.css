@@ -291,7 +291,7 @@ header p {
 }
 
 .course-card-body {
-  padding: 3px 20px 4px 20px;
+  padding: 3px 20px 8px 20px;
 }
 
 /* ============================================
@@ -554,8 +554,8 @@ header p {
   width: 100%;
   padding: 5px 16px;
   background: none;
-  border: none;
-  border-top: 1px solid var(--gray-border);
+  border: 1px solid var(--gray-border);
+  border-radius: 20px;
   color: var(--green-main);
   font-size: 0.82rem;
   font-weight: 600;
@@ -579,7 +579,7 @@ header p {
 }
 
 .course-card.collapsed .card-toggle-icon {
-  transform: rotate(45deg) translateY(-2px);
+  transform: rotate(45deg) translateY(-3px);
 }
 
 /* ============================================
