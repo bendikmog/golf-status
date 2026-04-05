@@ -384,6 +384,51 @@ header p {
 }
 
 /* ============================================
+   QUICK LINKS (Golfbox + Google Maps)
+   ============================================ */
+.quick-links {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--gray-border);
+}
+
+.quick-link-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-sm);
+  background: var(--gray-bg);
+  color: var(--gray-text);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.quick-link-btn:hover {
+  background: var(--green-pale);
+  border-color: var(--green-light);
+  color: var(--green-dark);
+}
+
+.quick-link-golfbox-logo {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+.quick-link-map-icon {
+  height: 20px;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+/* ============================================
    BADGES
    ============================================ */
 .badge {

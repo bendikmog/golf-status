@@ -8,7 +8,8 @@
       "Bash(curl -s -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36\" \"https://valdresgolf.no/\")",
       "Bash(curl -s -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36\" \"https://valdresgolf.no/aktuelt/\")",
       "Bash(node scripts/optimize-logos.js)",
-      "Bash(node -e ':*)"
+      "Bash(node -e ':*)",
+      "WebFetch(domain:golfbox.golf)"
     ]
   }
 }

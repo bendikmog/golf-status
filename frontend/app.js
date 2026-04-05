@@ -324,14 +324,17 @@ function buildCard(course) {
 
   const weatherHTML = buildWeatherSection(course.weather)
 
+  const quickLinksHTML = buildQuickLinksSection(course)
+
   // Only note and weather are collapsible
   const hasExpandableContent = statusNote || weatherHTML
 
-  // Collapsed by default on mobile, expanded on desktop
-  const startCollapsed = COLLAPSIBLE_CARDS && hasExpandableContent && window.matchMedia('(max-width: 640px)').matches
+  // Collapsible only on mobile
+  const isMobile = COLLAPSIBLE_CARDS && window.matchMedia('(max-width: 640px)').matches
+  const startCollapsed = isMobile && hasExpandableContent
   if (startCollapsed) card.classList.add('collapsed')
 
-  const toggleBtn = COLLAPSIBLE_CARDS && hasExpandableContent
+  const toggleBtn = isMobile && hasExpandableContent
     ? `<button class="card-toggle-btn" aria-expanded="${!startCollapsed}">
         <span class="card-toggle-label">${startCollapsed ? 'Vis mer' : 'Vis mindre'}</span>
         <span class="card-toggle-icon"></span>
@@ -357,6 +360,7 @@ function buildCard(course) {
       <div class="card-details-wrapper">
         <div class="card-details">
           ${statusNote}
+          ${quickLinksHTML}
           ${weatherHTML}
         </div>
       </div>
@@ -365,7 +369,7 @@ function buildCard(course) {
     </div>
   `
 
-  if (COLLAPSIBLE_CARDS && hasExpandableContent) {
+  if (isMobile && hasExpandableContent) {
     card.querySelector('.card-toggle-btn').addEventListener('click', () => {
       const isCollapsed = card.classList.toggle('collapsed')
       const btn = card.querySelector('.card-toggle-btn')
@@ -375,6 +379,26 @@ function buildCard(course) {
   }
 
   return card
+}
+
+// Build the two quick-link boxes: Golfbox booking + Google Maps directions
+function buildQuickLinksSection(course) {
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(course.name)}&center=${course.lat},${course.lon}`
+
+  return `
+    <div class="quick-links">
+      <a class="quick-link-btn" href="https://golfbox.golf/#/" target="_blank" rel="noopener noreferrer">
+        <img src="/logos/golfbox.png" alt="Golfbox" class="quick-link-golfbox-logo">
+        <span>Golfbox</span>
+      </a>
+      <a class="quick-link-btn" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">
+        <svg class="quick-link-map-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#ea4335"/>
+          <circle cx="12" cy="9" r="2.5" fill="white"/>
+        </svg>
+        <span>Veibeskrivelse</span>
+      </a>
+    </div>`
 }
 
 // Convert wind direction degrees to an arrow pointing the direction wind comes FROM
