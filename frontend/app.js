@@ -285,28 +285,19 @@ function buildCard(course) {
 
   const allCourseStatuses = course.status?.courses || []
 
-  // Primary rows: real 9/18-hole courses — always visible
-  // If none qualify, fall back to showing all (edge case: only training areas)
-  const realCourses = allCourseStatuses.filter(c => isRealCourse(c.name))
-  const primaryCourses = realCourses.length > 0 ? realCourses : allCourseStatuses
-  const secondaryCourses = realCourses.length > 0
-    ? allCourseStatuses.filter(c => !isRealCourse(c.name))
-    : []
-
   const buildRow = c => `
     <div class="status-row">
       <span class="status-label">${c.name}</span>
       <span class="badge ${c.status}">${formatStatus(c.status)}</span>
     </div>`
 
-  const primaryRows = primaryCourses.length > 0
-    ? primaryCourses.map(buildRow).join('')
+  // All course rows + driving range always visible
+  const courseRows = allCourseStatuses.length > 0
+    ? allCourseStatuses.map(buildRow).join('')
     : `<div class="status-row">
         <span class="status-label">Golfbanen</span>
         <span class="badge unknown">Status ikke tilgjengelig</span>
       </div>`
-
-  const secondaryRows = secondaryCourses.map(buildRow).join('')
 
   const drivingRangeRow = course.status?.drivingRange !== null && course.status?.drivingRange !== undefined
     ? `<div class="status-row">
@@ -333,7 +324,8 @@ function buildCard(course) {
 
   const weatherHTML = buildWeatherSection(course.weather)
 
-  const hasExpandableContent = secondaryRows || drivingRangeRow || statusNote || weatherHTML
+  // Only note and weather are collapsible
+  const hasExpandableContent = statusNote || weatherHTML
 
   // Collapsed by default on mobile, expanded on desktop
   const startCollapsed = COLLAPSIBLE_CARDS && hasExpandableContent && window.matchMedia('(max-width: 640px)').matches
@@ -358,16 +350,12 @@ function buildCard(course) {
 
     <div class="course-card-body">
       <div class="status-section">
-        ${primaryRows}
+        ${courseRows}
+        ${drivingRangeRow}
       </div>
 
       <div class="card-details-wrapper">
         <div class="card-details">
-          ${secondaryRows || drivingRangeRow ? `
-          <div class="status-section">
-            ${secondaryRows}
-            ${drivingRangeRow}
-          </div>` : ''}
           ${statusNote}
           ${weatherHTML}
         </div>
