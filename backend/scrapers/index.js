@@ -14,6 +14,8 @@ const strategies = {
   'holtsmark':             require('./holtsmark.js'),
   'eiker':                 require('./eiker.js'),
   'tyrifjord':             require('./tyrifjord.js'),
+  'atlungstad':            require('./atlungstad.js'),
+  'groruddalen':           require('./groruddalen.js'),
   'bamble':                require('./bamble.js'),
   'notteroy':              require('./notteroy.js'),
   'sandefjord':            require('./sandefjord.js'),
@@ -29,6 +31,10 @@ const strategies = {
   'kongsvinger':           require('./kongsvinger.js'),
   'sola':                  require('./sola.js'),
   'sgk':                   require('./sgk.js'),
+  'elverum':               require('./elverum.js'),
+  'randsfjord':            require('./randsfjord.js'),
+  'sorknes':               require('./sorknes.js'),
+  'valdres':               require('./valdres.js'),
 
 
   

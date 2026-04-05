@@ -50,6 +50,7 @@ async function optimizeLogos() {
             const savedPct     = Math.round((1 - newSize / originalSize) * 100)
             totalSavedBytes   += (originalSize - newSize)
 
+            fs.unlinkSync(inputPath)
             console.log(`  ${file.padEnd(30)} ${kb(originalSize)} → ${kb(newSize)} (-${savedPct}%)`)
         } catch (err) {
             console.error(`  FEIL: ${file} — ${err.message}`)

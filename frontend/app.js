@@ -1,6 +1,9 @@
 // The URL of the backend API
 const API_URL = '/api/courses'
 
+// Feature flag — set to false to revert to original non-collapsible cards
+const COLLAPSIBLE_CARDS = true
+
 // Keep track of all courses and the active filter
 let allCourses = []
 let activeRegion = 'all'
@@ -237,24 +240,23 @@ function renderCourses(courses) {
     })
 }
 
+// Returns true for real courses (18- or 9-hole), false for training areas
+function isRealCourse(name) {
+  const n = name.toLowerCase()
+  return !n.includes('korthull') &&
+         !n.includes('putting') &&
+         !n.includes('chipping') &&
+         !n.includes('treningsgreen') &&
+         !n.includes('nærspill') &&
+         !n.includes('trening') &&
+         !n.includes('øving') &&
+         !n.includes('range')
+}
+
 // Evaluate status for card - used in colored circle
 function getOverallStatus(course) {
   if (!course.status?.courses) return 'yellow'
   const courseList = course.status.courses
-
-  // Only "real" courses count for green status
-  // Korthullsbane, puttinggreen, chippinggreen etc. are training areas
-  const isRealCourse = (name) => {
-    const n = name.toLowerCase()
-    return !n.includes('korthull') &&
-           !n.includes('putting') &&
-           !n.includes('chipping') &&
-           !n.includes('treningsgreen') &&
-           !n.includes('nærspill') &&
-           !n.includes('trening') &&
-           !n.includes('øving') &&
-           !n.includes('range')
-  }
 
   const realCourses = courseList.filter(c => isRealCourse(c.name))
   const trainingOnly = realCourses.length === 0 && courseList.length > 0
@@ -281,64 +283,108 @@ function buildCard(course) {
 
   const overallStatus = getOverallStatus(course)
 
-  // Build course status rows
-  const courseRows = course.status?.courses?.length > 0
-    ? course.status.courses.map(c => `
-        <div class="status-row">
-          <span class="status-label">${c.name}</span>
-          <span class="badge ${c.status}">${formatStatus(c.status)}</span>
-        </div>
-      `).join('')
+  const allCourseStatuses = course.status?.courses || []
+
+  // Primary rows: real 9/18-hole courses — always visible
+  // If none qualify, fall back to showing all (edge case: only training areas)
+  const realCourses = allCourseStatuses.filter(c => isRealCourse(c.name))
+  const primaryCourses = realCourses.length > 0 ? realCourses : allCourseStatuses
+  const secondaryCourses = realCourses.length > 0
+    ? allCourseStatuses.filter(c => !isRealCourse(c.name))
+    : []
+
+  const buildRow = c => `
+    <div class="status-row">
+      <span class="status-label">${c.name}</span>
+      <span class="badge ${c.status}">${formatStatus(c.status)}</span>
+    </div>`
+
+  const primaryRows = primaryCourses.length > 0
+    ? primaryCourses.map(buildRow).join('')
     : `<div class="status-row">
         <span class="status-label">Golfbanen</span>
         <span class="badge unknown">Status ikke tilgjengelig</span>
       </div>`
 
-// Note is a div (not an anchor) to avoid invalid HTML nesting issues.
-// A small "read more" link inside opens the clubs website instead
-const statusNote = course.status.statusText
-        ? `<div class="status-note">
-            <span class="status-note-icon">📋</span>
-            <div class="status-note-content">
-                <p>${course.status.statusText}</p>
-                <a href="${course.url}" target="_blank" class="status-note-link">
-                    Les mer på klubbens nettside →
-                </a>
-            </div>
-        </div>`
+  const secondaryRows = secondaryCourses.map(buildRow).join('')
+
+  const drivingRangeRow = course.status?.drivingRange !== null && course.status?.drivingRange !== undefined
+    ? `<div class="status-row">
+        <span class="status-label">Driving range:</span>
+        <span class="badge ${course.status.drivingRange}">
+          ${formatStatus(course.status.drivingRange)}
+        </span>
+      </div>`
     : ''
 
-const weatherHTML = buildWeatherSection(course.weather)
+  // Note is a div (not an anchor) to avoid invalid HTML nesting issues.
+  // A small "read more" link inside opens the clubs website instead
+  const statusNote = course.status.statusText
+    ? `<div class="status-note">
+        <span class="status-note-icon">📋</span>
+        <div class="status-note-content">
+          <p>${course.status.statusText}</p>
+          <a href="${course.url}" target="_blank" class="status-note-link">
+            Les mer på klubbens nettside →
+          </a>
+        </div>
+      </div>`
+    : ''
+
+  const weatherHTML = buildWeatherSection(course.weather)
+
+  const hasExpandableContent = secondaryRows || drivingRangeRow || statusNote || weatherHTML
+
+  // Collapsed by default on mobile, expanded on desktop
+  const startCollapsed = COLLAPSIBLE_CARDS && hasExpandableContent && window.matchMedia('(max-width: 640px)').matches
+  if (startCollapsed) card.classList.add('collapsed')
+
+  const toggleBtn = COLLAPSIBLE_CARDS && hasExpandableContent
+    ? `<button class="card-toggle-btn" aria-expanded="${!startCollapsed}">
+        <span class="card-toggle-label">${startCollapsed ? 'Vis mer' : 'Vis mindre'}</span>
+        <span class="card-toggle-icon"></span>
+      </button>`
+    : ''
 
   card.innerHTML = `
     <div class="course-card-header">
-        ${course.logo
-            ? `<a href="${course.url}" target="_blank" rel="noopener noreferrer"><img class="course-logo" src="${course.logo}" alt="${course.name} logo" loading="lazy" onerror="this.style.display='none'"></a>`
-            : ''
-        }
-        <h2>${course.name}</h2>
-        <div class="status-dot ${overallStatus}"></div>
+      ${course.logo
+        ? `<a href="${course.url}" target="_blank" rel="noopener noreferrer"><img class="course-logo" src="${course.logo}" alt="${course.name} logo" loading="lazy" onerror="this.style.display='none'"></a>`
+        : ''
+      }
+      <h2>${course.name}</h2>
+      <div class="status-dot ${overallStatus}"></div>
     </div>
 
     <div class="course-card-body">
-
       <div class="status-section">
-        ${courseRows}
-        ${course.status?.drivingRange !== null && course.status?.drivingRange !== undefined ? `
-        <div class="status-row">
-          <span class="status-label">Driving range:</span>
-          <span class="badge ${course.status.drivingRange}">
-            ${formatStatus(course.status.drivingRange)}
-          </span>
-        </div>` : ''}
-    </div>
+        ${primaryRows}
+      </div>
 
-    ${statusNote}
+      <div class="card-details-wrapper">
+        <div class="card-details">
+          ${secondaryRows || drivingRangeRow ? `
+          <div class="status-section">
+            ${secondaryRows}
+            ${drivingRangeRow}
+          </div>` : ''}
+          ${statusNote}
+          ${weatherHTML}
+        </div>
+      </div>
 
-    ${weatherHTML}
-
+      ${toggleBtn}
     </div>
   `
+
+  if (COLLAPSIBLE_CARDS && hasExpandableContent) {
+    card.querySelector('.card-toggle-btn').addEventListener('click', () => {
+      const isCollapsed = card.classList.toggle('collapsed')
+      const btn = card.querySelector('.card-toggle-btn')
+      btn.setAttribute('aria-expanded', String(!isCollapsed))
+      btn.querySelector('.card-toggle-label').textContent = isCollapsed ? 'Vis mer' : 'Vis mindre'
+    })
+  }
 
   return card
 }

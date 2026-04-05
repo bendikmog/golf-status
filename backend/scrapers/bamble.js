@@ -23,8 +23,8 @@ async function scrape(url) {
       // Only process if it contains relevant keywords
       if (!lower.includes('banen') && !lower.includes('range') && !lower.includes('rang')) return
 
-      const courseOpen   = lower.includes('bane åpen') || lower.includes('banen åpen') || lower.includes('banen er åpen')
-      const courseClosed = lower.includes('banen stengt') || lower.includes('banen er stengt')
+      const courseOpen   = /\bbanen er åpen\b/.test(lower) || /\bbanen åpen\b/.test(lower) || /\bbane åpen\b/.test(lower)
+      const courseClosed = /\bbanen er stengt\b/.test(lower) || /\bbanen stengt\b/.test(lower)
       const rangeOpen    = lower.includes('rangen åpen') || lower.includes('range åpen') || lower.includes('rangen er åpen')
       const rangeClosed  = lower.includes('rangen stengt') || lower.includes('rangen er stengt') ||
                            lower.includes('rangen tengt') || lower.includes('range stengt')  // catches typos too
@@ -34,7 +34,6 @@ async function scrape(url) {
 
       // Use as note if meaningful
       if (!statusText && text.length > 20) statusText = text
-      return false
     })
 
     return {

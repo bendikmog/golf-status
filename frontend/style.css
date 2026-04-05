@@ -297,14 +297,14 @@ header p {
    STATUS ROWS
    ============================================ */
 .status-section {
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
 .status-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--gray-border);
   font-size: 0.9rem;
 }
@@ -479,6 +479,61 @@ header p {
 .weather-cell-wind,
 .weather-cell-rain {
   font-size: 10px;
+}
+
+/* ============================================
+   COLLAPSIBLE CARD DETAILS
+   grid-template-rows animasjon for smooth
+   height-overgang uten max-height hacks.
+   ============================================ */
+.card-details-wrapper {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.35s ease;
+}
+
+.course-card.collapsed .card-details-wrapper {
+  grid-template-rows: 0fr;
+}
+
+.card-details {
+  overflow: hidden;
+}
+
+.card-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px 16px;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--gray-border);
+  color: var(--green-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.card-toggle-btn:hover {
+  background: var(--gray-bg);
+}
+
+/* Chevron icon — rotates when expanded */
+.card-toggle-icon {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--green-main);
+  border-bottom: 2px solid var(--green-main);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+.course-card.collapsed .card-toggle-icon {
+  transform: rotate(-135deg) translateY(-2px);
 }
 
 /* ============================================
