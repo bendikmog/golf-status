@@ -25,14 +25,17 @@ async function scrape(url) {
 
     const courseOpen = lowerText.includes('banen er åpen') ||
                        lowerText.includes('banen åpner') ||
-                       lowerText.includes('åpner banen')
+                       lowerText.includes('åpner banen') ||
+                       lowerText.includes('banen er open')
 
     const courseClosed = lowerText.includes('banen er stengt') ||
                          lowerText.includes('banen stengt')
 
     const rangeOpen = lowerText.includes('rangen er åpen') ||
                       lowerText.includes('range åpner') ||
-                      lowerText.includes('driving range åpner')
+                      lowerText.includes('driving range åpner') ||
+                      lowerText.includes('rangen er open') ||
+                      lowerText.includes('range open')
 
     const rangeClosed = lowerText.includes('rangen er stengt') ||
                         lowerText.includes('range stengt')

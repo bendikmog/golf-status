@@ -24,9 +24,11 @@ async function scrape(url) {
 
       if (!lower.includes('banen') && !lower.includes('range')) return
 
-      const courseOpen   = lower.includes('banen er åpen') || lower.includes('banen åpen') || lower.includes('banen åpner')
+      const courseOpen   = lower.includes('banen er åpen') || lower.includes('banen åpen') || lower.includes('banen åpner') ||
+                           lower.includes('banen er open') || lower.includes('banen open')
       const courseClosed = lower.includes('banen er stengt') || lower.includes('banen stengt')
-      const rangeOpen    = lower.includes('rangen er åpen') || lower.includes('range åpen') || lower.includes('range åpner')
+      const rangeOpen    = lower.includes('rangen er åpen') || lower.includes('range åpen') || lower.includes('range åpner') ||
+                           lower.includes('rangen er open') || lower.includes('range open')
       const rangeClosed  = lower.includes('rangen er stengt') || lower.includes('range stengt')
 
       if (courseOpen || courseClosed) courseStatus = courseOpen ? 'open' : 'closed'

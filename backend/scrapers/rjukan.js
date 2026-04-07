@@ -17,11 +17,11 @@ async function scrape(url) {
       const lower = text.toLowerCase()
 
       // Parse range status
-      const rangeOpen   = lower.includes('range') && (lower.includes('range – åpen') || lower.includes('range – åpent') || lower.includes('range -åpen'))
+      const rangeOpen   = lower.includes('range') && (lower.includes('range – åpen') || lower.includes('range – åpent') || lower.includes('range -åpen') || lower.includes('range – open'))
       const rangeClosed = lower.includes('range') && (lower.includes('range – stengt') || lower.includes('range -stengt'))
 
       // Parse course status
-      const courseOpen   = lower.includes('banen – åpen') || lower.includes('banen – åpent') || lower.includes('banen -åpen')
+      const courseOpen   = lower.includes('banen – åpen') || lower.includes('banen – åpent') || lower.includes('banen -åpen') || lower.includes('banen – open')
       const courseClosed = lower.includes('banen – stengt') || lower.includes('banen -stengt')
 
       if (rangeOpen || rangeClosed) rangeStatus = rangeOpen ? 'open' : 'closed'

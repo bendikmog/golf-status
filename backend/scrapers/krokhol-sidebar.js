@@ -16,15 +16,15 @@ async function scrape(url) {
 
     // Search for course status
     const courseOpen = statusLines.some(t =>
-        (t.includes('banen') || t.includes('bane')) && t.includes('åpen')
+        (t.includes('banen') || t.includes('bane')) && (t.includes('åpen') || t.includes('open'))
     )
-    const courseClosed = statusLines.some(t => 
+    const courseClosed = statusLines.some(t =>
         (t.includes('banen') || t.includes('bane')) && t.includes('stengt')
     )
 
     //Search for driving range status
     const rangeOpen = statusLines.some(t =>
-        (t.includes('range') || t.includes('rangen')) && t.includes('åpen')
+        (t.includes('range') || t.includes('rangen')) && (t.includes('åpen') || t.includes('open'))
     )
     const rangeClosed = statusLines.some(t => 
         (t.includes('range') || t.includes('rangen')) && t.includes('stengt')

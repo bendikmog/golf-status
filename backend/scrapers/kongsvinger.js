@@ -28,7 +28,7 @@ async function scrape(url) {
 
       const label = rawLabel.toLowerCase()
       const value = rawValue.toLowerCase()
-      const isOpen   = value.includes('åpen') || value.includes('åpent')
+      const isOpen   = value.includes('åpen') || value.includes('åpent') || value.includes('open')
       const isClosed = value.includes('stengt')
       const status   = isOpen ? 'open' : isClosed ? 'closed' : 'unknown'
 

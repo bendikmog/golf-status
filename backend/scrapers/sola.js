@@ -17,13 +17,13 @@ async function scrape(url) {
     // Wait until the status table appears (up to 8 seconds), ignore timeout
     await page.waitForFunction(() => {
       return [...document.querySelectorAll('table')]
-        .some(t => t.innerText.includes('STENGT') || t.innerText.includes('ÅPEN'))
+        .some(t => t.innerText.includes('STENGT') || t.innerText.includes('ÅPEN') || t.innerText.includes('OPEN'))
     }, { timeout: 8000 }).catch(() => {})
 
     // Read the status table
     const result = await page.evaluate(() => {
       const table = [...document.querySelectorAll('table')]
-        .find(t => t.innerText.includes('STENGT') || t.innerText.includes('ÅPEN'))
+        .find(t => t.innerText.includes('STENGT') || t.innerText.includes('ÅPEN') || t.innerText.includes('OPEN'))
       if (!table) return null
 
       const rows = [...table.querySelectorAll('tr')].map(row => {
@@ -44,7 +44,7 @@ async function scrape(url) {
 
     result.forEach(({ label, value }) => {
       const l = label.toLowerCase()
-      const isOpen   = value.includes('ÅPEN')
+      const isOpen   = value.includes('ÅPEN') || value.includes('OPEN')
       const isClosed = value.includes('STENGT')
       const status   = isOpen ? 'open' : isClosed ? 'closed' : 'unknown'
 

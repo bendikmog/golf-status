@@ -15,11 +15,13 @@ async function scrape(url) {
     const text = statusBlock.text().replace(/\s+/g, ' ').trim()
     const lower = text.toLowerCase()
 
-    const courseOpen   = lower.includes('banen: åpen') || lower.includes('banen:åpen')
+    const courseOpen   = lower.includes('banen: åpen') || lower.includes('banen:åpen') ||
+                         lower.includes('banen: open') || lower.includes('banen:open')
     const courseClosed = lower.includes('banen: stengt') || lower.includes('banen:stengt') ||
                          lower.includes('banen: åpner')
 
-    const rangeOpen    = lower.includes('driving range: åpen') || lower.includes('driving range:åpen')
+    const rangeOpen    = lower.includes('driving range: åpen') || lower.includes('driving range:åpen') ||
+                         lower.includes('driving range: open') || lower.includes('driving range:open')
     const rangeClosed  = lower.includes('driving range: stengt') || lower.includes('driving range:stengt') ||
                          lower.includes('driving range: åpner')
 

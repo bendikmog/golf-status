@@ -21,7 +21,7 @@ async function scrape(url) {
     // Parse courses
     const courses = []
     for (const [label, status] of Object.entries(statusMap)) {
-      const isOpen = status.startsWith('åpen')
+      const isOpen = status.startsWith('åpen') || status.startsWith('open')
       const isClosed = status.startsWith('stengt') || status.startsWith('ikke tillatt')
       const parsedStatus = isOpen ? 'open' : isClosed ? 'closed' : 'unknown'
 
@@ -35,7 +35,7 @@ async function scrape(url) {
 
     // Parse range
     const rangeStatus = statusMap['driving range'] || ''
-    const rangeOpen = rangeStatus.startsWith('åpen')
+    const rangeOpen = rangeStatus.startsWith('åpen') || rangeStatus.startsWith('open')
     const rangeClosed = rangeStatus.startsWith('stengt')
 
     return {

@@ -7,6 +7,7 @@ const strategies = {
   'wordpress-banestatus':  require('./wordpress-banestatus'),
   'gronmo-status':         require('./gronmo-status.js'),
   'squarespace-news':      require('./squarespace-news.js'),
+  'sandnes':               require('./sandnes.js'),
   'oslogk':                require('./oslogk'),
   'shopify-blog':          require('./shopify-blog'),
   'borregaard':            require('./borregaard.js'),
@@ -31,10 +32,35 @@ const strategies = {
   'kongsvinger':           require('./kongsvinger.js'),
   'sola':                  require('./sola.js'),
   'sgk':                   require('./sgk.js'),
+  'egersund':              require('./egersund.js'),
+  'haugesund':             require('./haugesund.js'),
+  'mandal':                require('./mandal.js'),
+  'sirdal':                require('./sirdal.js'),
+  'haugaland':             require('./haugaland.js'),
+  'jaeren':                require('./jaeren.js'),
+  'karmoy':                require('./karmoy.js'),
+  'nordvegen':             require('./nordvegen.js'),
+  'ogna':                  require('./ogna.js'),
+  'prgk':                  require('./prgk.js'),
+  'randaberg':             require('./randaberg.js'),
+  'sauda':                 require('./sauda.js'),
   'elverum':               require('./elverum.js'),
   'randsfjord':            require('./randsfjord.js'),
   'sorknes':               require('./sorknes.js'),
   'valdres':               require('./valdres.js'),
+  'bergen':                require('./bergen.js'),
+  'bjornefjorden':         require('./bjornefjorden.js'),
+  'hardanger':             require('./hardanger.js'),
+  'herdla':                require('./herdla.js'),
+  'kvinnherad':            require('./kvinnherad.js'),
+  'meland':                require('./meland.js'),
+  'nordfjord':             require('./nordfjord.js'),
+  'sandane':               require('./sandane.js'),
+  'selje':                 require('./selje.js'),
+  'stord':                 require('./stord.js'),
+  'sunnfjord':             require('./sunnfjord.js'),
+  'tysnes':                require('./tysnes.js'),
+  'voss':                  require('./voss.js'),
 
 
   
@@ -45,6 +71,17 @@ const strategies = {
 
 }
 
+// Lower score = higher in the list. Main/real courses first, training areas last.
+function mainCourseScore(name) {
+  const n = name.toLowerCase()
+  if (n.includes('hoved'))   return 0
+  if (n.includes('18'))      return 1
+  if (n.includes('banen') || n === 'golfbanen') return 2
+  if (n.includes('bane'))    return 3
+  if (n.includes('9'))       return 4
+  return 10
+}
+
 async function scrapeCourse(course) {
   const strategy = strategies[course.scrapeMethod]
 
@@ -53,7 +90,13 @@ async function scrapeCourse(course) {
     return { course: 'unknown', drivingRange: 'unknown' }
   }
 
-  return strategy.scrape(course.url)
+  const result = await strategy.scrape(course.url)
+
+  if (Array.isArray(result.courses) && result.courses.length > 1) {
+    result.courses.sort((a, b) => mainCourseScore(a.name) - mainCourseScore(b.name))
+  }
+
+  return result
 }
 
 module.exports = { scrapeCourse }

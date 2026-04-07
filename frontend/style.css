@@ -213,7 +213,7 @@ header p {
 
 .filter-btn {
   padding: 5px 13px;
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 500;
   color: var(--gray-text);
   background: white;
@@ -278,10 +278,10 @@ header p {
 .course-logo {
   height: 40px;
   width: auto;
+  max-width: 100px;
   background: white;
   border-radius: 6px;
   padding: 4px;
-  object-fit: contain;
 }
 
 .course-card-header h2 {
@@ -635,7 +635,7 @@ header p {
   }
 
   .filter-btn {
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     padding: 5px 12px;
   }
 }

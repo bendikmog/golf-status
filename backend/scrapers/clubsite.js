@@ -26,9 +26,31 @@ async function scrape(url) {
     // and always provides the status note text
     // ============================================
 
-    const courses = tableResult.courses.length > 0
+    const rawCourses = tableResult.courses.length > 0
       ? tableResult.courses
       : widgetResult.courses
+
+    // Deduplicate by name (some sites repeat the same table rows)
+    const seen = new Set()
+    const deduped = rawCourses.filter(c => {
+      const key = c.name.toLowerCase()
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+
+    // Sort: real courses first, training areas (korthull, putting, etc.) last
+    const isReal = name => {
+      const n = name.toLowerCase()
+      return !n.includes('korthull') && !n.includes('putting') &&
+             !n.includes('chipping') && !n.includes('treningsgreen') &&
+             !n.includes('nærspill') && !n.includes('trening') &&
+             !n.includes('øving') && !n.includes('range')
+    }
+    const courses = [
+      ...deduped.filter(c => isReal(c.name)),
+      ...deduped.filter(c => !isReal(c.name)),
+    ]
 
     const drivingRange = tableResult.drivingRange !== 'unknown'
       ? tableResult.drivingRange
@@ -63,7 +85,7 @@ function scrapeTable($) {
     const statusRaw = $(cells[1]).text().trim().toUpperCase()
 
     // Only trust explicit ÅPEN/STENGT — ignore "Se info", empty, etc.
-    const isOpen = statusRaw.includes('ÅPEN')
+    const isOpen = statusRaw.includes('ÅPEN') || statusRaw.includes('OPEN')
     const isClosed = statusRaw.includes('STENGT')
     if (!isOpen && !isClosed) return
 
@@ -81,7 +103,8 @@ function scrapeTable($) {
       label.includes('putting') ||
       label.includes('korthull') ||
       label.includes('trening') ||
-      label.includes('øving')
+      label.includes('øving') ||
+      label.includes('pitch')
     ) && !label.includes('range') &&
      !label.includes('golfbil') &&
      !label.includes('bil på') &&
@@ -179,7 +202,10 @@ function scrapeWidget($) {
                      lower.includes('banen er åpen') ||
                      lower.includes('åpner banen') ||
                      lower.includes('banen åpner') ||
-                     lower.includes('bane åpen')
+                     lower.includes('bane åpen') ||
+                     lower.includes('banen open') ||
+                     lower.includes('banen er open') ||
+                     lower.includes('bane open')
 
   const courseClosed = lower.includes('banen stengt') ||
                        lower.includes('banen er stengt') ||
@@ -189,7 +215,9 @@ function scrapeWidget($) {
                     lower.includes('rangen åpen') ||
                     lower.includes('range åpner') ||
                     lower.includes('drivingrange åpen') ||
-                    lower.includes('driving range åpner')
+                    lower.includes('driving range åpner') ||
+                    lower.includes('range open') ||
+                    lower.includes('rangen open')
 
   const rangeClosed = lower.includes('range stengt') ||
                       lower.includes('rangen stengt')

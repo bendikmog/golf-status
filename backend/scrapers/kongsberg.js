@@ -22,7 +22,7 @@ async function scrape(url) {
 
         const label = $(cells[0]).text().trim().toLowerCase()
         const statusRaw = $(cells[1]).text().trim().toLowerCase()
-        const isOpen = statusRaw === 'åpen'
+        const isOpen = statusRaw === 'åpen' || statusRaw === 'open'
         const isClosed = statusRaw === 'stengt'
         const status = isOpen ? 'open' : isClosed ? 'closed' : 'unknown'
 

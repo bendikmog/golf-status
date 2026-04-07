@@ -23,9 +23,10 @@ async function scrape(url) {
       // Only process if it contains relevant keywords
       if (!lower.includes('banen') && !lower.includes('range') && !lower.includes('rang')) return
 
-      const courseOpen   = /\bbanen er åpen\b/.test(lower) || /\bbanen åpen\b/.test(lower) || /\bbane åpen\b/.test(lower)
+      const courseOpen   = /\bbanen er (åpen|open)\b/.test(lower) || /\bbanen (åpen|open)\b/.test(lower) || /\bbane (åpen|open)\b/.test(lower)
       const courseClosed = /\bbanen er stengt\b/.test(lower) || /\bbanen stengt\b/.test(lower)
-      const rangeOpen    = lower.includes('rangen åpen') || lower.includes('range åpen') || lower.includes('rangen er åpen')
+      const rangeOpen    = lower.includes('rangen åpen') || lower.includes('range åpen') || lower.includes('rangen er åpen') ||
+                           lower.includes('rangen open') || lower.includes('range open') || lower.includes('rangen er open')
       const rangeClosed  = lower.includes('rangen stengt') || lower.includes('rangen er stengt') ||
                            lower.includes('rangen tengt') || lower.includes('range stengt')  // catches typos too
 

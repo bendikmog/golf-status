@@ -28,12 +28,12 @@ async function scrape(url) {
 
     // Parse bane status
     const baneVal = pairs['banen'] || ''
-    const courseOpen   = baneVal.includes('åpen') && !baneVal.includes('stengt')
+    const courseOpen   = (baneVal.includes('åpen') || baneVal.includes('open')) && !baneVal.includes('stengt')
     const courseClosed = baneVal.includes('stengt') || baneVal.includes('frost') || baneVal.includes('snø')
 
     // Parse range status
     const rangeVal = pairs['drivingrange'] || pairs['driving range'] || ''
-    const rangeOpen   = rangeVal.includes('åpen')
+    const rangeOpen   = rangeVal.includes('åpen') || rangeVal.includes('open')
     const rangeClosed = rangeVal.includes('stengt')
 
     // Status note from bane

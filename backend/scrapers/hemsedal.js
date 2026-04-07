@@ -14,10 +14,10 @@ async function scrape(url) {
     $('.elementor-icon-box-title').each((i, el) => {
       const text = $(el).text().replace(/\s+/g, ' ').trim().toLowerCase()
 
-      if (text.includes('golfbanen er åpen'))   courseStatus = 'open'
-      if (text.includes('golfbanen er stengt'))  courseStatus = 'closed'
-      if (text.includes('drivingrangen er åpen'))  rangeStatus = 'open'
-      if (text.includes('drivingrangen er stengt')) rangeStatus = 'closed'
+      if (text.includes('golfbanen er åpen') || text.includes('golfbanen er open'))   courseStatus = 'open'
+      if (text.includes('golfbanen er stengt'))                                       courseStatus = 'closed'
+      if (text.includes('drivingrangen er åpen') || text.includes('drivingrangen er open'))  rangeStatus = 'open'
+      if (text.includes('drivingrangen er stengt'))                                          rangeStatus = 'closed'
     })
 
     return {

@@ -18,7 +18,7 @@ async function scrape(url) {
       if (!text.toLowerCase().startsWith('banestatus:')) return
 
       const lower = text.toLowerCase()
-      const courseOpen   = lower.includes('åpen') && !lower.includes('stengt')
+      const courseOpen   = (lower.includes('åpen') || lower.includes('open')) && !lower.includes('stengt')
       const courseClosed = lower.includes('stengt') || lower.includes('sesongen')
 
       courseStatus = courseOpen ? 'open' : courseClosed ? 'closed' : 'unknown'
@@ -35,7 +35,8 @@ async function scrape(url) {
       if (text.includes('drivingrange åpner') || text.includes('range åpner')) {
         rangeStatus = 'closed' // åpner = not open yet
       }
-      if (text.includes('drivingrange åpen') || text.includes('range åpen')) {
+      if (text.includes('drivingrange åpen') || text.includes('range åpen') ||
+          text.includes('drivingrange open') || text.includes('range open')) {
         rangeStatus = 'open'
       }
     })

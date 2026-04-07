@@ -15,14 +15,16 @@ async function scrape(url) {
     .replace(/\s+/g, ' ')
     .toLowerCase()
 
-    const courseOpen = pageText.includes('banen er åpen')
+    const courseOpen = pageText.includes('banen er åpen') || pageText.includes('banen er open')
     const courseClosed = pageText.includes('banen er stengt') ||
                          pageText.includes('banen er\nstengt')
 
     // Also check alternative phrasings
     const rangeOpen = pageText.includes('rangen er åpen') ||
                     pageText.includes('drivingrange er åpen') ||
-                    pageText.includes('range er åpen')
+                    pageText.includes('range er åpen') ||
+                    pageText.includes('rangen er open') ||
+                    pageText.includes('range er open')
 
     const rangeClosed = pageText.includes('rangen er stengt') ||
                         pageText.includes('drivingrange er stengt') ||

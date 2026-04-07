@@ -1,75 +1,93 @@
 /**
- * Logo optimizer — konverterer PNG-logoer til komprimert WebP.
+ * Logo optimizer — konverterer bilder til WebP og beholder den minste filen.
+ * Støttede kildeformater: .png .jpg .jpeg .svg .avif
  *
  * Kjør med:  node scripts/optimize-logos.js
  *
- * Scriptet er trygt å kjøre flere ganger:
- * - Hopper over filer som allerede er konvertert (samme navn, .webp-endelse)
- * - Behandler kun nye PNG-filer som mangler tilsvarende .webp
- * - De originale PNG-filene beholdes uendret
+ * For hver fil:
+ * - Konverter til WebP
+ * - Behold WebP hvis den er mindre → slett original, oppdater courses.js
+ * - Behold original hvis den er mindre → slett WebP, la courses.js være
  *
- * Etter konvertering oppdateres courses.js automatisk til å bruke .webp-stier.
+ * Trygt å kjøre flere ganger — hopper over filer uten ubehandlet original.
  */
 
 const sharp = require('sharp')
 const fs = require('fs')
 const path = require('path')
 
-const LOGOS_DIR = path.join(__dirname, '..', 'logos')
+const LOGOS_DIR    = path.join(__dirname, '..', 'logos')
 const COURSES_FILE = path.join(__dirname, '..', 'backend', 'courses.js')
 const WEBP_QUALITY = 85
+const SUPPORTED_EXTS = ['.png', '.jpg', '.jpeg', '.svg', '.avif']
+
+function toWebpPath(file) {
+    const ext = path.extname(file)
+    return file.slice(0, -ext.length) + '.webp'
+}
 
 async function optimizeLogos() {
-    const files = fs.readdirSync(LOGOS_DIR).filter(f => f.endsWith('.png'))
+    const files = fs.readdirSync(LOGOS_DIR)
+        .filter(f => SUPPORTED_EXTS.includes(path.extname(f).toLowerCase()))
 
-    const newFiles = files.filter(f => {
-        const webpPath = path.join(LOGOS_DIR, f.replace('.png', '.webp'))
-        return !fs.existsSync(webpPath)
-    })
-
-    if (newFiles.length === 0) {
-        console.log('Ingen nye PNG-filer å konvertere.')
+    if (files.length === 0) {
+        console.log('Ingen nye filer å behandle.')
         return
     }
 
-    console.log(`Konverterer ${newFiles.length} fil(er) til WebP...\n`)
+    console.log(`Behandler ${files.length} fil(er)...\n`)
 
-    let totalSavedBytes = 0
+    const keptAsOriginal = []
+    const convertedToWebp = []
 
-    for (const file of newFiles) {
+    for (const file of files) {
+        const ext        = path.extname(file).toLowerCase()
         const inputPath  = path.join(LOGOS_DIR, file)
-        const outputPath = path.join(LOGOS_DIR, file.replace('.png', '.webp'))
+        const webpPath   = path.join(LOGOS_DIR, toWebpPath(file))
 
         try {
-            await sharp(inputPath)
+            await sharp(inputPath, ext === '.svg' ? { density: 300 } : {})
                 .webp({ quality: WEBP_QUALITY })
-                .toFile(outputPath)
+                .toFile(webpPath)
 
             const originalSize = fs.statSync(inputPath).size
-            const newSize      = fs.statSync(outputPath).size
-            const savedPct     = Math.round((1 - newSize / originalSize) * 100)
-            totalSavedBytes   += (originalSize - newSize)
+            const webpSize     = fs.statSync(webpPath).size
 
-            fs.unlinkSync(inputPath)
-            console.log(`  ${file.padEnd(30)} ${kb(originalSize)} → ${kb(newSize)} (-${savedPct}%)`)
+            if (webpSize < originalSize) {
+                const saved = Math.round((1 - webpSize / originalSize) * 100)
+                fs.unlinkSync(inputPath)
+                convertedToWebp.push(file)
+                console.log(`  ✓ ${file.padEnd(35)} ${kb(originalSize)} → ${kb(webpSize)} WebP (-${saved}%)`)
+            } else {
+                const larger = Math.round((webpSize / originalSize - 1) * 100)
+                fs.unlinkSync(webpPath)
+                keptAsOriginal.push(file)
+                console.log(`  = ${file.padEnd(35)} beholder original ${kb(originalSize)} (WebP ville vært +${larger}% større)`)
+            }
         } catch (err) {
             console.error(`  FEIL: ${file} — ${err.message}`)
         }
     }
 
-    console.log(`\nTotalt spart: ${kb(totalSavedBytes)} på ${newFiles.length} fil(er)`)
+    console.log(`\n${convertedToWebp.length} konvertert til WebP, ${keptAsOriginal.length} beholdt som original`)
 
-    updateCoursesJs(newFiles)
+    if (convertedToWebp.length > 0) {
+        updateCoursesJs(convertedToWebp, 'toWebp')
+    }
+    if (keptAsOriginal.length > 0) {
+        updateCoursesJs(keptAsOriginal, 'toOriginal')
+    }
 }
 
-// Replaces /logos/xxx.png with /logos/xxx.webp for converted files in courses.js
-function updateCoursesJs(convertedFiles) {
+function updateCoursesJs(files, direction) {
     let source = fs.readFileSync(COURSES_FILE, 'utf8')
     let changeCount = 0
 
-    for (const file of convertedFiles) {
-        const oldPath = `/logos/${file}`
-        const newPath = `/logos/${file.replace('.png', '.webp')}`
+    for (const file of files) {
+        const webpName     = toWebpPath(file)
+        const [oldPath, newPath] = direction === 'toWebp'
+            ? [`/logos/${file}`, `/logos/${webpName}`]
+            : [`/logos/${webpName}`, `/logos/${file}`]
 
         if (source.includes(oldPath)) {
             source = source.replaceAll(oldPath, newPath)
@@ -79,7 +97,7 @@ function updateCoursesJs(convertedFiles) {
 
     if (changeCount > 0) {
         fs.writeFileSync(COURSES_FILE, source, 'utf8')
-        console.log(`\ncourses.js oppdatert: ${changeCount} logo-sti(er) byttet til .webp`)
+        console.log(`courses.js oppdatert: ${changeCount} logo-sti(er) endret`)
     }
 }
 

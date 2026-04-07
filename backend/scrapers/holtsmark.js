@@ -50,7 +50,7 @@ async function scrape(url) {
       const isCourse = label.includes('banen') ||
                        label.includes('hull') ||
                        label.includes('bane') 
-      const isOpen = status.includes('åpen')
+      const isOpen = status.includes('åpen') || status.includes('open')
       const isClosed = status.includes('stengt') || status.includes('åpner')
 
       if (isCourse && !label.includes('range') && !label.includes('bil') && !label.includes('kiosk')) {
@@ -66,7 +66,7 @@ async function scrape(url) {
       l.includes('range') || l.includes('drivingrange')
     )
     const rangeStatus = rangeLabel ? statusMap[rangeLabel] : 'unknown'
-    const rangeOpen = rangeStatus.includes('åpen')
+    const rangeOpen = rangeStatus.includes('åpen') || rangeStatus.includes('open')
     const rangeClosed = rangeStatus.includes('stengt') || rangeStatus.includes('åpner')
 
     return {

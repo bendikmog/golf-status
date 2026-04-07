@@ -285,11 +285,17 @@ function buildCard(course) {
 
   const allCourseStatuses = course.status?.courses || []
 
-  const buildRow = c => `
+  const buildRow = c => {
+    const override = course.coursesHoles?.find(r => c.name.toLowerCase().includes(r.match.toLowerCase()))
+    const holes = override?.holes ?? course.holes
+    const needsHullSuffix = holes && isRealCourse(c.name) && !/hull/i.test(c.name)
+    const label = needsHullSuffix ? `${c.name} (${holes} hull)` : c.name
+    return `
     <div class="status-row">
-      <span class="status-label">${c.name}</span>
+      <span class="status-label">${label}</span>
       <span class="badge ${c.status}">${formatStatus(c.status)}</span>
     </div>`
+  }
 
   // All course rows + driving range always visible
   const courseRows = allCourseStatuses.length > 0
@@ -310,13 +316,18 @@ function buildCard(course) {
 
   // Note is a div (not an anchor) to avoid invalid HTML nesting issues.
   // A small "read more" link inside opens the clubs website instead
-  const statusNote = course.status.statusText
+  const allUnknown = allCourseStatuses.every(c => c.status === 'unknown')
+    && (course.status?.drivingRange === 'unknown' || course.status?.drivingRange == null)
+  const noStatusInfo = allUnknown && !course.status.statusText
+  const statusNoteText = course.status.statusText
+    || (noStatusInfo ? 'Finner ingen informasjon om banestatus på klubbens nettside.' : null)
+  const statusNote = statusNoteText
     ? `<div class="status-note">
         <span class="status-note-icon">📋</span>
         <div class="status-note-content">
-          <p>${course.status.statusText}</p>
+          <p>${statusNoteText}</p>
           <a href="${course.url}" target="_blank" class="status-note-link">
-            Les mer på klubbens nettside →
+            ${noStatusInfo && !course.status.statusText ? 'Besøk klubbens nettside →' : 'Les mer på klubbens nettside →'}
           </a>
         </div>
       </div>`
@@ -388,7 +399,7 @@ function buildQuickLinksSection(course) {
   return `
     <div class="quick-links">
       <a class="quick-link-btn" href="https://golfbox.golf/#/" target="_blank" rel="noopener noreferrer">
-        <img src="/logos/golfbox.png" alt="Golfbox" class="quick-link-golfbox-logo">
+        <img src="/img/golfbox.png" alt="Golfbox" class="quick-link-golfbox-logo">
         <span>Golfbox</span>
       </a>
       <a class="quick-link-btn" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">

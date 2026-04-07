@@ -21,9 +21,9 @@ async function scrape(url) {
             // Clean up multiple spaces before checking
             const lower = text.toLowerCase().replace(/\s+/g, ' ')
 
-            const courseOpen   = lower.includes('banen: åpen')
+            const courseOpen   = lower.includes('banen: åpen') || lower.includes('banen: open')
             const courseClosed = lower.includes('banen: stengt')
-            const rangeOpen    = lower.includes('rangen: åpen')
+            const rangeOpen    = lower.includes('rangen: åpen') || lower.includes('rangen: open')
             const rangeClosed  = lower.includes('rangen: stengt')
 
             if (courseOpen || courseClosed) {

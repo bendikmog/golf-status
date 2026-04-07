@@ -17,7 +17,7 @@ async function scrape(url) {
 
       if (!lower.startsWith('banen')) return
 
-      if (lower.includes('åpen'))   courseStatus = 'open'
+      if (lower.includes('åpen') || lower.includes('open'))   courseStatus = 'open'
       if (lower.includes('stengt')) courseStatus = 'closed'
 
       // Show as note, cleaned up

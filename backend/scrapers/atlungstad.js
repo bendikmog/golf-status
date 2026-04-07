@@ -18,14 +18,14 @@ async function scrape(url) {
       const text  = $(el).text().replace(/\s+/g, ' ').trim()
       const lower = text.toLowerCase()
 
-      if (/\bbanen er åpen\b/.test(lower))    courseStatus = 'open'
-      if (/\bbanen er stengt\b/.test(lower))  courseStatus = 'closed'
+      if (/\bbanen er (åpen|open)\b/.test(lower))    courseStatus = 'open'
+      if (/\bbanen er stengt\b/.test(lower))        courseStatus = 'closed'
 
-      if (/drivingrangen er åpen/.test(lower))   rangeStatus = 'open'
-      if (/drivingrangen er stengt/.test(lower)) rangeStatus = 'closed'
+      if (/drivingrangen er (åpen|open)/.test(lower))   rangeStatus = 'open'
+      if (/drivingrangen er stengt/.test(lower))        rangeStatus = 'closed'
 
-      if (/korthullsbanen er åpen/.test(lower))   shortStatus = 'open'
-      if (/korthullsbanen er stengt/.test(lower)) shortStatus = 'closed'
+      if (/korthullsbanen er (åpen|open)/.test(lower))   shortStatus = 'open'
+      if (/korthullsbanen er stengt/.test(lower))        shortStatus = 'closed'
     })
 
     return {

@@ -35,7 +35,9 @@ async function scrape(url) {
       lower.includes('banen er klar') ||
       lower.includes('åpner banen') ||
       lower.includes('sesongåpning') ||
-      lower.includes('sesongen er i gang')
+      lower.includes('sesongen er i gang') ||
+      lower.includes('banen er open') ||
+      lower.includes('open for spill')
 
     const courseClosed =
       lower.includes('banen er stengt') ||
@@ -49,7 +51,10 @@ async function scrape(url) {
       lower.includes('range åpen') ||
       lower.includes('rangen åpen') ||
       lower.includes('driving range åpen') ||
-      lower.includes('korthullsbanen åpen')
+      lower.includes('korthullsbanen åpen') ||
+      lower.includes('range open') ||
+      lower.includes('rangen open') ||
+      lower.includes('driving range open')
 
     const rangeClosed =
       lower.includes('range stengt') ||

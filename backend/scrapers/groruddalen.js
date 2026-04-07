@@ -17,7 +17,7 @@ async function scrape(url) {
       const label     = $(cells[0]).text().trim().toLowerCase()
       const statusRaw = $(cells[1]).text().trim().toUpperCase()
 
-      const isOpen   = statusRaw.includes('ÅPEN')
+      const isOpen   = statusRaw.includes('ÅPEN') || statusRaw.includes('OPEN')
       const isClosed = statusRaw.includes('STENGT')
       if (!isOpen && !isClosed) return
 
@@ -47,7 +47,7 @@ async function scrape(url) {
       if (!mentionsCourse && !mentionsRange) return
 
       const signalsClosed = lower.includes('stengt') || lower.includes('stenger') || lower.includes('holder stengt')
-      const signalsOpen   = lower.includes('åpen') || lower.includes('åpner')
+      const signalsOpen   = lower.includes('åpen') || lower.includes('åpner') || lower.includes('open')
 
       let score = 1 // base score for being relevant
 

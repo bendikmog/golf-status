@@ -39,7 +39,8 @@ async function scrape(url) {
       combinedText.includes('banen er åpen') ||
       combinedText.includes('åpen for spill') ||
       combinedText.includes('sesongen er i gang') ||
-      combinedText.includes('banen åpner')
+      combinedText.includes('banen er open') ||
+      combinedText.includes('open for spill')
 
     // Detekter stengt
     const courseClosed =

@@ -21,9 +21,11 @@ async function scrape(url) {
         const parent = $(el).parent()
         const text = parent.text().replace($(el).text(), '').toLowerCase().trim()
 
-        const courseOpen   = text.includes('banen: åpen') || text.includes('banen åpen') || text.includes('banen er åpen')
+        const courseOpen   = text.includes('banen: åpen') || text.includes('banen åpen') || text.includes('banen er åpen') ||
+                             text.includes('banen: open') || text.includes('banen open') || text.includes('banen er open')
         const courseClosed = text.includes('banen: stengt') || text.includes('banen stengt') || text.includes('banen er stengt')
-        const rangeOpen    = text.includes('driving range åpen') || text.includes('driving range: åpen') || text.includes('rangen åpen')
+        const rangeOpen    = text.includes('driving range åpen') || text.includes('driving range: åpen') || text.includes('rangen åpen') ||
+                             text.includes('driving range open') || text.includes('driving range: open') || text.includes('rangen open')
         const rangeClosed  = text.includes('driving range stengt') || text.includes('driving range: stengt') || text.includes('rangen stengt')
 
         if (courseOpen || courseClosed) courseStatus = courseOpen ? 'open' : 'closed'
@@ -36,7 +38,8 @@ async function scrape(url) {
     if (courseStatus === 'unknown') {
       $('h1, h2, h3, h4').each((_i, el) => {
         const text = $(el).text().trim().toLowerCase()
-        if (text.includes('banen er åpen') || text.includes('banen åpen')) courseStatus = 'open'
+        if (text.includes('banen er åpen') || text.includes('banen åpen') ||
+            text.includes('banen er open') || text.includes('banen open')) courseStatus = 'open'
         else if (text.includes('banen er stengt') || text.includes('banen stengt')) courseStatus = 'closed'
       })
     }
@@ -55,6 +58,7 @@ async function scrape(url) {
 
       // Only use as note if it contains relevant status info
       const isRelevant = lower.includes('åpen') ||
+                         lower.includes('open') ||
                          lower.includes('stengt') ||
                          lower.includes('åpner') ||
                          lower.includes('stenger') ||
