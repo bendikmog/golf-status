@@ -3,6 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Banestatus – Live status for norske golfbaner</title>
+    <meta name="description" content="Se live status for alle norske golfbaner. Finn ut hvor du kan spille golf nå – filtrer på avstand, region og åpningsstatus. Oppdateres automatisk.">
+    <link rel="canonical" href="https://banestatus.no/">
+
+    <!-- Open Graph (deling på sosiale medier) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://banestatus.no/">
+    <meta property="og:title" content="Banestatus – Live status for norske golfbaner">
+    <meta property="og:description" content="Se live status for alle norske golfbaner. Finn ut hvor du kan spille golf nå – filtrer på avstand, region og åpningsstatus.">
+    <meta property="og:image" content="https://banestatus.no/img/og-img.png">
+    <meta property="og:locale" content="nb_NO">
+    <meta property="og:site_name" content="Banestatus">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Banestatus – Live status for norske golfbaner">
+    <meta name="twitter:description" content="Se live status for alle norske golfbaner. Finn ut hvor du kan spille golf nå.">
+    <meta name="twitter:image" content="https://banestatus.no/img/og-img.png">
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow">
+
+    <!-- Tema-farge (nettleser-UI på mobil) -->
+    <meta name="theme-color" content="#2d6a2d">
+
+    <!-- Raskere lasting av eksterne ressurser -->
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://api.yr.no">
+
+    <!-- Structured data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Banestatus",
+      "url": "https://banestatus.no/",
+      "description": "Live status for norske golfbaner – finn ut hvor du kan spille golf nå.",
+      "inLanguage": "nb",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://banestatus.no/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- Google Analytics tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-P2TRQ56CVM"></script>
     <script>
@@ -12,7 +62,7 @@
 
       gtag('config', 'G-P2TRQ56CVM');
     </script>
-    <title>Banestatus - Hvor kan jeg spille?</title>
+
     <link rel="icon" type="image/png" href="/img/course-logo.png">
     <link rel="stylesheet" href="style.css">
 </head>
