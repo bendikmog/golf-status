@@ -14,7 +14,23 @@ let maxDistance = null
 // Run this as soon as the page loads
 document.addEventListener('DOMContentLoaded',() => {
     fetchCourses()
+    initScrollBehaviour()
 })
+
+// Hide search bar on scroll down, reveal on scroll up
+function initScrollBehaviour() {
+    const searchBar = document.getElementById('search-bar')
+    let lastScrollY = window.scrollY
+
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY
+        const scrollingDown = currentScrollY > lastScrollY
+        const pastThreshold = currentScrollY > 80
+
+        searchBar.classList.toggle('scroll-hidden', scrollingDown && pastThreshold)
+        lastScrollY = currentScrollY
+    }, { passive: true })
+}
 
 // Fetch all course data from our backend
 async function fetchCourses() {
@@ -106,6 +122,7 @@ function buildFilterButtons(courses) {
   // Active filters — sets for multi-select
   const activeStatuses = new Set(['all'])
   const activeCounties = new Set(['all'])
+  let show18HolesOnly = false
 
   function applyFilters() {
     const searchQuery = document.getElementById('search-input')?.value.toLowerCase().trim() || ''
@@ -119,13 +136,14 @@ function buildFilterButtons(courses) {
       const statusMatch = activeStatuses.has('all') || activeStatuses.has(overallStatus)
       const countyMatch = activeCounties.has('all') || activeCounties.has(course.county)
       const searchMatch = searchQuery === '' || course.name.toLowerCase().includes(searchQuery)
+      const holesMatch = !show18HolesOnly || course.holes === 18
 
       // Distance filter
       const distanceMatch = !userLat || !maxDistance
       ? true
       : haversineDistance(userLat, userLon, course.lat, course.lon) <= maxDistance
 
-      card.style.display = statusMatch && countyMatch && searchMatch && distanceMatch ? '' : 'none'
+      card.style.display = statusMatch && countyMatch && searchMatch && holesMatch && distanceMatch ? '' : 'none'
     })
   }
 
@@ -163,6 +181,12 @@ function buildFilterButtons(courses) {
   }
 
   filterContainer.addEventListener('click', handleFilterClick)
+
+  document.getElementById('holes-toggle').addEventListener('click', () => {
+    show18HolesOnly = !show18HolesOnly
+    document.getElementById('holes-toggle').classList.toggle('holes-toggle-active', show18HolesOnly)
+    applyFilters()
+  })
   document.getElementById('search-input').addEventListener('input', e => {
     applyFilters()
   })

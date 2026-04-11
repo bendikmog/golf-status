@@ -93,6 +93,16 @@ header p {
   border: 1px solid var(--gray-border);
   box-shadow: var(--shadow-sm);
   margin-bottom: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: transform 0.25s ease;
+  will-change: transform;
+}
+
+#search-bar.scroll-hidden {
+  transform: translateY(calc(-100% - 12px));
+  pointer-events: none;
 }
 
 #search-input {
@@ -162,6 +172,31 @@ header p {
 }
 
 #distance-select:focus {
+  border-color: var(--green-main);
+}
+
+.holes-toggle-btn {
+  padding: 7px 13px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-text);
+  background: #f9fafb;
+  border: 1.5px solid #d1d5db;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.holes-toggle-btn:hover {
+  border-color: var(--green-light);
+  color: var(--green-main);
+}
+
+.holes-toggle-btn.holes-toggle-active {
+  background: var(--green-main);
+  color: white;
   border-color: var(--green-main);
 }
 
