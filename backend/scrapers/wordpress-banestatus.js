@@ -22,8 +22,11 @@ async function scrape(url) {
         const text = parent.text().replace($(el).text(), '').toLowerCase().trim()
 
         const courseOpen   = text.includes('banen: åpen') || text.includes('banen åpen') || text.includes('banen er åpen') ||
-                             text.includes('banen: open') || text.includes('banen open') || text.includes('banen er open')
-        const courseClosed = text.includes('banen: stengt') || text.includes('banen stengt') || text.includes('banen er stengt')
+                             text.includes('banen: open') || text.includes('banen open') || text.includes('banen er open') ||
+                             text.includes('bana: åpen') || text.includes('bana åpen') || text.includes('bana er åpen') ||
+                             text.includes('bana: open') || text.includes('bana open') || text.includes('bana er open')
+        const courseClosed = text.includes('banen: stengt') || text.includes('banen stengt') || text.includes('banen er stengt') ||
+                             text.includes('bana: stengt') || text.includes('bana stengt') || text.includes('bana er stengt')
         const rangeOpen    = text.includes('driving range åpen') || text.includes('driving range: åpen') || text.includes('rangen åpen') ||
                              text.includes('driving range open') || text.includes('driving range: open') || text.includes('rangen open')
         const rangeClosed  = text.includes('driving range stengt') || text.includes('driving range: stengt') || text.includes('rangen stengt')
@@ -39,8 +42,11 @@ async function scrape(url) {
       $('h1, h2, h3, h4').each((_i, el) => {
         const text = $(el).text().trim().toLowerCase()
         if (text.includes('banen er åpen') || text.includes('banen åpen') ||
-            text.includes('banen er open') || text.includes('banen open')) courseStatus = 'open'
-        else if (text.includes('banen er stengt') || text.includes('banen stengt')) courseStatus = 'closed'
+            text.includes('banen er open') || text.includes('banen open') ||
+            text.includes('bana er åpen') || text.includes('bana åpen') ||
+            text.includes('bana er open') || text.includes('bana open')) courseStatus = 'open'
+        else if (text.includes('banen er stengt') || text.includes('banen stengt') ||
+                 text.includes('bana er stengt') || text.includes('bana stengt')) courseStatus = 'closed'
       })
     }
 

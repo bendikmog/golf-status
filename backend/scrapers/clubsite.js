@@ -200,16 +200,20 @@ function scrapeWidget($) {
 
   const courseOpen = lower.includes('banen åpen') ||
                      lower.includes('banen er åpen') ||
-                     lower.includes('åpner banen') ||
-                     lower.includes('banen åpner') ||
                      lower.includes('bane åpen') ||
                      lower.includes('banen open') ||
                      lower.includes('banen er open') ||
-                     lower.includes('bane open')
+                     lower.includes('bane open') ||
+                     lower.includes('bana åpen') ||
+                     lower.includes('bana er åpen') ||
+                     lower.includes('bana open') ||
+                     lower.includes('bana er open')
 
   const courseClosed = lower.includes('banen stengt') ||
                        lower.includes('banen er stengt') ||
-                       lower.includes('stenger banen')
+                       lower.includes('stenger banen') ||
+                       lower.includes('bana stengt') ||
+                       lower.includes('bana er stengt')
 
   const rangeOpen = lower.includes('range åpen') ||
                     lower.includes('rangen åpen') ||

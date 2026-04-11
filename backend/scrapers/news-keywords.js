@@ -27,15 +27,17 @@ async function scrape(url) {
     const recentText = headlines.slice(0, 50).join(' ')
 
     const courseOpen = recentText.includes('banen er åpen') ||
-                       recentText.includes('banen åpner') ||
-                       recentText.includes('åpner banen') ||
-                       recentText.includes('sesongåpning') ||
-                       recentText.includes('sesongen er åpen')
+                       recentText.includes('banen er open') ||
+                       recentText.includes('sesongen er åpen') ||
+                       recentText.includes('bana er åpen') ||
+                       recentText.includes('bana er open')
 
     const courseClosed = recentText.includes('banen er stengt') ||
                          recentText.includes('banen stengt') ||
                          recentText.includes('banen er nå stengt') ||
-                         recentText.includes('stengt for sesongen')
+                         recentText.includes('stengt for sesongen') ||
+                         recentText.includes('bana er stengt') ||
+                         recentText.includes('bana stengt')
 
     const rangeOpen = recentText.includes('rangen er åpen') ||
                       recentText.includes('rangen åpner') ||

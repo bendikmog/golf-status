@@ -288,8 +288,9 @@ function buildCard(course) {
   const buildRow = c => {
     const override = course.coursesHoles?.find(r => c.name.toLowerCase().includes(r.match.toLowerCase()))
     const holes = override?.holes ?? course.holes
-    const needsHullSuffix = holes && isRealCourse(c.name) && !/hull/i.test(c.name)
-    const label = needsHullSuffix ? `${c.name} (${holes} hull)` : c.name
+    const displayName = override?.displayName ?? c.name
+    const needsHullSuffix = holes && isRealCourse(c.name) && !/hull/i.test(displayName)
+    const label = needsHullSuffix ? `${displayName} (${holes} hull)` : displayName
     return `
     <div class="status-row">
       <span class="status-label">${label}</span>
@@ -318,17 +319,25 @@ function buildCard(course) {
   // A small "read more" link inside opens the clubs website instead
   const allUnknown = allCourseStatuses.every(c => c.status === 'unknown')
     && (course.status?.drivingRange === 'unknown' || course.status?.drivingRange == null)
+  const isFacebook = course.url && course.url.includes('facebook.com')
   const noStatusInfo = allUnknown && !course.status.statusText
   const statusNoteText = course.status.statusText
-    || (noStatusInfo ? 'Finner ingen informasjon om banestatus på klubbens nettside.' : null)
+    || (isFacebook && allUnknown
+        ? (course.facebookNote
+            ? `For hyppigere oppdateringer, følg klubben på Facebook.`
+            : `Finner ingen hjemmeside for ${course.name} — følg dem på Facebook for oppdateringer om banestatus.`)
+        : noStatusInfo ? 'Finner ingen informasjon om banestatus på klubbens nettside.' : null)
+  const statusNoteLink = course.url
+    ? `<a href="${course.url}" target="_blank" class="status-note-link">
+            ${isFacebook ? 'Gå til Facebook-siden →' : noStatusInfo ? 'Besøk klubbens nettside →' : 'Les mer på klubbens nettside →'}
+          </a>`
+    : ''
   const statusNote = statusNoteText
     ? `<div class="status-note">
         <span class="status-note-icon">📋</span>
         <div class="status-note-content">
           <p>${statusNoteText}</p>
-          <a href="${course.url}" target="_blank" class="status-note-link">
-            ${noStatusInfo && !course.status.statusText ? 'Besøk klubbens nettside →' : 'Les mer på klubbens nettside →'}
-          </a>
+          ${statusNoteLink}
         </div>
       </div>`
     : ''
@@ -394,7 +403,10 @@ function buildCard(course) {
 
 // Build the two quick-link boxes: Golfbox booking + Google Maps directions
 function buildQuickLinksSection(course) {
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(course.name)}&center=${course.lat},${course.lon}`
+  const mapsQuery = course.mapsCoordOnly
+    ? `${course.lat},${course.lon}`
+    : encodeURIComponent(course.mapsName ?? course.name)
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}&center=${course.lat},${course.lon}`
 
   return `
     <div class="quick-links">

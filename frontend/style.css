@@ -276,9 +276,11 @@ header p {
 }
 
 .course-logo {
+  display: block;
   height: 40px;
   width: auto;
-  max-width: 100px;
+  max-width: 120px;
+  object-fit: contain;
   background: white;
   border-radius: 6px;
   padding: 4px;

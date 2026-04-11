@@ -17,7 +17,8 @@ const strategies = {
   'tyrifjord':             require('./tyrifjord.js'),
   'atlungstad':            require('./atlungstad.js'),
   'groruddalen':           require('./groruddalen.js'),
-  'bamble':                require('./bamble.js'),
+  'generic':               require('./generic.js'),
+  'bamble':                require('./generic.js'), // legacy alias
   'notteroy':              require('./notteroy.js'),
   'sandefjord':            require('./sandefjord.js'),
   'hallingdal':            require('./hallingdal.js'),
@@ -61,6 +62,16 @@ const strategies = {
   'sunnfjord':             require('./sunnfjord.js'),
   'tysnes':                require('./tysnes.js'),
   'voss':                  require('./voss.js'),
+  'ekholt':               require('./ekholt.js'),
+  'trysil':               require('./trysil.js'),
+  'tingvoll':             require('./tingvoll.js'),
+  'byneset':              require('./byneset.js'),
+  'hitra':                require('./hitra.js'),
+  'klabu':                require('./klabu.js'),
+  'oppdal':               require('./oppdal.js'),
+  'roros':                require('./roros.js'),
+  'trondheim-gk':         require('./trondheim-gk.js'),
+  'tromso':               require('./tromso.js'),
 
 
   
@@ -82,7 +93,23 @@ function mainCourseScore(name) {
   return 10
 }
 
+const { scrapeGlfr } = require('./glfr.js')
+
 async function scrapeCourse(course) {
+  if (course.scrapeMethod === 'none') {
+    return {
+      courses: [{ name: 'Golfbanen', status: 'unknown' }],
+      drivingRange: 'unknown',
+      statusText: course.statusNote || null,
+    }
+  }
+
+  if (course.scrapeMethod === 'glfr') {
+    const result = await scrapeGlfr(course.glfrSlug)
+    if (course.statusNote) result.statusText = course.statusNote
+    return result
+  }
+
   const strategy = strategies[course.scrapeMethod]
 
   if (!strategy) {
@@ -94,6 +121,10 @@ async function scrapeCourse(course) {
 
   if (Array.isArray(result.courses) && result.courses.length > 1) {
     result.courses.sort((a, b) => mainCourseScore(a.name) - mainCourseScore(b.name))
+  }
+
+  if (course.statusNote) {
+    result.statusText = course.statusNote
   }
 
   return result
