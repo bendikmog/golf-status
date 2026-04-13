@@ -6,9 +6,11 @@ const courses = require('./courses')
 const { scrapeCourse } = require('./scrapers')
 const { getWeather} = require('./weather')
 const axios = require('axios')
-const https = require ('https')
-axios.defaults.httpsAgent = new https.Agent({ rejectUnauthorized: false })
 
+// Merk: Vi slår IKKE av TLS-validering globalt her. Hvis en enkelt scraper
+// må snakke med en klubbside med utløpt/selvsignert sertifikat, skal den
+// lage sin egen lokale httpsAgent — se backend/scrapers/generic.js for
+// et eksempel på mønsteret.
 
 const app = express()
 const PORT = 3000
