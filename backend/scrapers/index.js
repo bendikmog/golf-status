@@ -94,6 +94,18 @@ function mainCourseScore(name) {
 }
 
 const { scrapeGlfr } = require('./glfr.js')
+const Sentry = require('@sentry/node')
+
+// En scraper "lykkes" teknisk sett selv om den ikke fikk ut noe data,
+// fordi hver scraper har sin egen try/catch som returnerer et tomt resultat.
+// Denne hjelperen oppdager slike stille feil så vi kan rapportere dem til Sentry.
+function isEmptyResult(result) {
+  if (!result) return true
+  const noCourses = !Array.isArray(result.courses) || result.courses.length === 0
+  const noDrivingRange = !result.drivingRange || result.drivingRange === 'unknown'
+  const noStatusText = !result.statusText
+  return noCourses && noDrivingRange && noStatusText
+}
 
 async function scrapeCourse(course) {
   if (course.scrapeMethod === 'none') {
@@ -118,6 +130,17 @@ async function scrapeCourse(course) {
   }
 
   const result = await strategy.scrape(course.url)
+
+  // Hvis scraperen returnerte tomt (fordi dens interne try/catch svelget en feil),
+  // rapporter det til Sentry med nok kontekst til å finne ut hvilken bane og metode.
+  // Selve feilmeldingen ligger fortsatt i Railway-loggen via console.error i scraperen.
+  if (isEmptyResult(result)) {
+    Sentry.captureMessage(`Scraper returned empty result for ${course.id}`, {
+      level: 'warning',
+      tags: { kind: 'scraper-empty', courseId: course.id, method: course.scrapeMethod },
+      extra: { url: course.url },
+    })
+  }
 
   if (Array.isArray(result.courses) && result.courses.length > 1) {
     result.courses.sort((a, b) => mainCourseScore(a.name) - mainCourseScore(b.name))
