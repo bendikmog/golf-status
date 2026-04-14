@@ -321,10 +321,25 @@ function buildFilterButtons(courses) {
         applyFilters()
       },
       // Feil (avslått, timeout, ikke tilgjengelig)
-      () => {
+      (error) => {
         geoBtn.classList.remove('geo-btn-loading')
         geoBtn.classList.add('geo-btn-error')
-        geoBtn.title = 'Kunne ikke hente posisjon. Bruk postnummer i stedet.'
+
+        // error.code: 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
+        // title-attributtet vises ikke på mobil, så vi bruker alert() for å
+        // faktisk kommunisere hva som gikk galt.
+        let message
+        if (error.code === 1) {
+          message = 'Posisjon er blokkert for denne siden.\n\niPhone: Innstillinger → Personvern → Stedstjenester → Safari-nettsteder → Tillat.\n\nDu kan bruke postnummer i stedet.'
+        } else if (error.code === 2) {
+          message = 'Kunne ikke finne posisjonen din. Sjekk at stedstjenester er på, eller bruk postnummer i stedet.'
+        } else if (error.code === 3) {
+          message = 'Det tok for lang tid å hente posisjonen. Prøv igjen, eller bruk postnummer i stedet.'
+        } else {
+          message = 'Kunne ikke hente posisjon. Bruk postnummer i stedet.'
+        }
+        geoBtn.title = message
+        alert(message)
       },
       {
         enableHighAccuracy: false,  // ~100m holder for km-filter; raskere + mindre batteri
