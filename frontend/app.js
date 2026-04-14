@@ -152,6 +152,7 @@ function buildFilterButtons(courses) {
 
   function applyFilters() {
     const searchQuery = document.getElementById('search-input')?.value.toLowerCase().trim() || ''
+    let visibleCount = 0
 
     document.querySelectorAll('.course-card').forEach(card => {
       const id = card.dataset.courseId
@@ -169,8 +170,14 @@ function buildFilterButtons(courses) {
       ? true
       : haversineDistance(userLat, userLon, course.lat, course.lon) <= maxDistance
 
-      card.style.display = statusMatch && countyMatch && searchMatch && holesMatch && distanceMatch ? '' : 'none'
+      const visible = statusMatch && countyMatch && searchMatch && holesMatch && distanceMatch
+      card.style.display = visible ? '' : 'none'
+      if (visible) visibleCount++
     })
+
+    // Vis "ingen treff"-meldingen hvis alle kort er filtrert bort
+    const noResults = document.getElementById('no-results')
+    if (noResults) noResults.classList.toggle('hidden', visibleCount > 0)
   }
 
   function handleFilterClick(e) {
@@ -257,6 +264,39 @@ function buildFilterButtons(courses) {
 
   postnummerInput.addEventListener('input', updateDistanceFilter)
   distanceSelect.addEventListener('change', updateDistanceFilter)
+
+  // Nullstill-knappen: tømmer alle filtre og tekstfelt i én operasjon.
+  // Bruker samme state som resten av filter-logikken fordi vi er inne i
+  // samme closure (buildFilterButtons).
+  const resetBtn = document.getElementById('reset-filters-btn')
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      // Reset status + område
+      activeStatuses.clear()
+      activeStatuses.add('all')
+      activeCounties.clear()
+      activeCounties.add('all')
+      show18HolesOnly = false
+
+      // Reset inputs
+      document.getElementById('search-input').value = ''
+      postnummerInput.value = ''
+      postnummerInput.style.borderColor = ''
+      postnummerInput.title = ''
+      distanceSelect.value = ''
+      userLat = null
+      userLon = null
+      maxDistance = null
+
+      // Reset knappetilstander: "Alle" aktiv, resten ikke
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.value === 'all')
+      })
+      document.getElementById('holes-toggle').classList.remove('holes-toggle-active')
+
+      applyFilters()
+    })
+  }
 }
 
 // Switch the active filter and re-render
@@ -332,6 +372,15 @@ function buildCard(course) {
   card.dataset.courseId = course.id
 
   const overallStatus = getOverallStatus(course)
+
+  // Tekstlig ekvivalent av statusfargen — brukes av skjermlesere og som tooltip.
+  // Dette er tilgjengelighet (a11y): fargeblinde og blinde brukere får
+  // ikke informasjon fra en ren farget prikk.
+  const statusLabel = overallStatus === 'green'
+    ? 'Banen er åpen'
+    : overallStatus === 'red'
+      ? 'Banen er stengt'
+      : 'Delvis åpen eller status ukjent'
 
   const allCourseStatuses = course.status?.courses || []
 
@@ -418,7 +467,7 @@ function buildCard(course) {
         : ''
       }
       <h2>${esc(course.name)}</h2>
-      <div class="status-dot ${esc(overallStatus)}"></div>
+      <div class="status-dot ${esc(overallStatus)}" role="img" aria-label="${esc(statusLabel)}" title="${esc(statusLabel)}"></div>
     </div>
 
     <div class="course-card-body">

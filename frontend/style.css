@@ -643,6 +643,37 @@ header p {
 }
 
 /* ============================================
+   NO RESULTS
+   Vises når alle filtre kombinert skjuler alle kort.
+   ============================================ */
+#no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray-muted);
+}
+
+#no-results p {
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+}
+
+#reset-filters-btn {
+  padding: 9px 22px;
+  background: var(--green-main);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+
+#reset-filters-btn:hover {
+  background: var(--green-dark);
+}
+
+/* ============================================
    MOBILE — max 640px
    Search inputs stack vertically and fill
    the full width. Filter buttons scroll
