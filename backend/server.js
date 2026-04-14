@@ -1,3 +1,9 @@
+// VIKTIG: instrument.js MÅ lastes aller først, før alt annet.
+// Sentry hooker seg inn i Node.js sine interne mekanismer, og det må skje
+// før andre pakker lastes for at feil-fangingen skal være komplett.
+require('./instrument')
+const Sentry = require('@sentry/node')
+
 const express = require('express')
 const compression = require('compression')
 const helmet = require('helmet')
@@ -42,10 +48,34 @@ let puppeteerCacheById = {}
 async function fetchCoursesData(courseList) {
     return Promise.all(
         courseList.map(async (course) => {
-            const [status, weather] = await Promise.all([
+            // Kjør scraper og vær-henting i parallell. Hvis noen av dem feiler,
+            // rapporterer vi til Sentry med kontekst om hvilken klubb det gjelder,
+            // og returnerer trygge fallback-verdier så resten av appen ikke krasjer.
+            const [statusResult, weatherResult] = await Promise.allSettled([
                 scrapeCourse(course),
                 getWeather(course.lat, course.lon),
             ])
+
+            let status = null
+            if (statusResult.status === 'fulfilled') {
+                status = statusResult.value
+            } else {
+                Sentry.captureException(statusResult.reason, {
+                    tags: { kind: 'scraper', courseId: course.id, method: course.scrapeMethod },
+                    extra: { url: course.url },
+                })
+            }
+
+            let weather = []
+            if (weatherResult.status === 'fulfilled') {
+                weather = weatherResult.value
+            } else {
+                Sentry.captureException(weatherResult.reason, {
+                    tags: { kind: 'weather', courseId: course.id },
+                    extra: { lat: course.lat, lon: course.lon },
+                })
+            }
+
             return { ...course, status, weather }
         })
     )
@@ -294,6 +324,10 @@ app.get('/api/postnummer/:nr', async (req, res) => {
     res.status(500).json({error: 'Kunne ikke slå opp postnummer' })
     }
 })
+
+// Sentry Express-feilhåndtering — MÅ registreres etter alle routes,
+// men før andre error-middleware. Fanger uventede feil i handlers.
+Sentry.setupExpressErrorHandler(app)
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`)
