@@ -1,5 +1,6 @@
 const express = require('express')
 const compression = require('compression')
+const helmet = require('helmet')
 const path = require('path')
 const cron = require('node-cron')
 const courses = require('./courses')
@@ -165,6 +166,61 @@ initialUpdatePromise.then(() => updatePuppeteerCache())
 // =====================================
 // MIDDLEWARE - basic setup
 // =====================================
+
+// ============================================
+// SIKKERHETSHEADERE
+// Helmet setter en rekke HTTP-headere som gjør vanlige angrep vanskeligere.
+// Content Security Policy (CSP) er den viktigste: den sier til nettleseren
+// hvilke kilder som er lov å laste scripts, stiler, bilder osv. fra.
+// Hvis en angriper klarer å smugle inn <script> i sidens HTML, vil CSP
+// hindre at det faktisk kjøres.
+// ============================================
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            // Scripts: egen server + Google Analytics (inkl. regionale subdomener)
+            scriptSrc: [
+                "'self'",
+                "https://www.googletagmanager.com",
+                "https://*.google-analytics.com",
+            ],
+            // Stiler: egen server + Google Fonts CSS
+            // 'unsafe-inline' trengs for inline style="..."-attributter vi
+            // bruker i kortene (f.eks. style="color:${windColor}")
+            styleSrc: [
+                "'self'",
+                "'unsafe-inline'",
+                "https://fonts.googleapis.com",
+            ],
+            // Fonter: Google Fonts leverer selve font-filene fra gstatic
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            // Bilder: egen server + værikoner fra jsdelivr + GA-pixels + data:-URLer
+            imgSrc: [
+                "'self'",
+                "data:",
+                "https://cdn.jsdelivr.net",
+                "https://*.google-analytics.com",
+                "https://www.googletagmanager.com",
+            ],
+            // Forbindelser (fetch/XHR): egen server + GA
+            // *.google-analytics.com dekker region1, region2 osv. som GA bruker
+            // for å sende målingsdata.
+            connectSrc: [
+                "'self'",
+                "https://*.google-analytics.com",
+                "https://*.analytics.google.com",
+                "https://www.googletagmanager.com",
+            ],
+            // Ikke tillat at siden bygges inn i iframe på andre domener
+            frameAncestors: ["'none'"],
+            // Blokker gamle plugins (Flash osv.)
+            objectSrc: ["'none'"],
+        },
+    },
+    // Tillat cross-origin-bilder (værikoner fra jsdelivr)
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+}))
 
 app.use(compression())
 app.use(express.json())
