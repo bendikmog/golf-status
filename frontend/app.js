@@ -4,6 +4,32 @@ const API_URL = '/api/courses'
 // Feature flag — set to false to revert to original non-collapsible cards
 const COLLAPSIBLE_CARDS = true
 
+// ============================================
+// XSS-beskyttelse
+// All tekst fra scraping/eksterne kilder MÅ gjennom esc() før den
+// interpoleres inn i en innerHTML-streng. URL-er skal gjennom safeUrl()
+// for å blokkere "javascript:"-lenker o.l.
+// ============================================
+function esc(value) {
+  if (value === null || value === undefined) return ''
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function safeUrl(url) {
+  if (!url) return ''
+  const trimmed = String(url).trim()
+  // Kun http(s) og relative stier er lov
+  if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith('/')) {
+    return esc(trimmed)
+  }
+  return ''
+}
+
 // Keep track of all courses and the active filter
 let allCourses = []
 let activeRegion = 'all'
@@ -317,8 +343,8 @@ function buildCard(course) {
     const label = needsHullSuffix ? `${displayName} (${holes} hull)` : displayName
     return `
     <div class="status-row">
-      <span class="status-label">${label}</span>
-      <span class="badge ${c.status}">${formatStatus(c.status)}</span>
+      <span class="status-label">${esc(label)}</span>
+      <span class="badge ${esc(c.status)}">${formatStatus(c.status)}</span>
     </div>`
   }
 
@@ -333,7 +359,7 @@ function buildCard(course) {
   const drivingRangeRow = course.status?.drivingRange !== null && course.status?.drivingRange !== undefined
     ? `<div class="status-row">
         <span class="status-label">Driving range:</span>
-        <span class="badge ${course.status.drivingRange}">
+        <span class="badge ${esc(course.status.drivingRange)}">
           ${formatStatus(course.status.drivingRange)}
         </span>
       </div>`
@@ -352,7 +378,7 @@ function buildCard(course) {
             : `Finner ingen hjemmeside for ${course.name} — følg dem på Facebook for oppdateringer om banestatus.`)
         : noStatusInfo ? 'Finner ingen informasjon om banestatus på klubbens nettside.' : null)
   const statusNoteLink = course.url
-    ? `<a href="${course.url}" target="_blank" class="status-note-link">
+    ? `<a href="${safeUrl(course.url)}" target="_blank" rel="noopener noreferrer" class="status-note-link">
             ${isFacebook ? 'Gå til Facebook-siden →' : noStatusInfo ? 'Besøk klubbens nettside →' : 'Les mer på klubbens nettside →'}
           </a>`
     : ''
@@ -360,7 +386,7 @@ function buildCard(course) {
     ? `<div class="status-note">
         <span class="status-note-icon">📋</span>
         <div class="status-note-content">
-          <p>${statusNoteText}</p>
+          <p>${esc(statusNoteText)}</p>
           ${statusNoteLink}
         </div>
       </div>`
@@ -388,11 +414,11 @@ function buildCard(course) {
   card.innerHTML = `
     <div class="course-card-header">
       ${course.logo
-        ? `<a href="${course.url}" target="_blank" rel="noopener noreferrer"><img class="course-logo" src="${course.logo}" alt="${course.name} logo" loading="lazy" onerror="this.style.display='none'"></a>`
+        ? `<a href="${safeUrl(course.url)}" target="_blank" rel="noopener noreferrer"><img class="course-logo" src="${safeUrl(course.logo)}" alt="${esc(course.name)} logo" loading="lazy" onerror="this.style.display='none'"></a>`
         : ''
       }
-      <h2>${course.name}</h2>
-      <div class="status-dot ${overallStatus}"></div>
+      <h2>${esc(course.name)}</h2>
+      <div class="status-dot ${esc(overallStatus)}"></div>
     </div>
 
     <div class="course-card-body">
@@ -438,7 +464,7 @@ function buildQuickLinksSection(course) {
         <img src="/img/golfbox.png" alt="Golfbox" class="quick-link-golfbox-logo">
         <span>Golfbox</span>
       </a>
-      <a class="quick-link-btn" href="${mapsUrl}" target="_blank" rel="noopener noreferrer">
+      <a class="quick-link-btn" href="${safeUrl(mapsUrl)}" target="_blank" rel="noopener noreferrer">
         <svg class="quick-link-map-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#ea4335"/>
           <circle cx="12" cy="9" r="2.5" fill="white"/>
@@ -510,7 +536,10 @@ function buildWeatherGrid(entries) {
       return diff < closestDiff ? hour : closest
     })
 
-    const iconUrl = `https://cdn.jsdelivr.net/gh/metno/weathericons@main/weather/svg/${best.symbol}.svg`
+    // Værsymbolet fra met.no er alltid et enkelt ord (f.eks. "clearsky_day"),
+    // men vi sanitizer det før vi bygger URL og bruker det som alt-tekst.
+    const safeSymbol = esc(best.symbol ?? '')
+    const iconUrl = `https://cdn.jsdelivr.net/gh/metno/weathericons@main/weather/svg/${safeSymbol}.svg`
     const windArrow = getWindArrow(best.windDirection)
     const windColor = best.windSpeed > 8 ? '#dc2626' : best.windSpeed > 5 ? '#d97706' : '#2563eb'
 
@@ -518,7 +547,7 @@ function buildWeatherGrid(entries) {
       <div class="weather-cell">
         <div class="weather-cell-time">${slot.label}</div>
         <div class="weather-cell-main">
-          <img src="${iconUrl}" class="weather-cell-icon" alt="${best.symbol}" loading="lazy" decoding="async" />
+          <img src="${iconUrl}" class="weather-cell-icon" alt="${safeSymbol}" loading="lazy" decoding="async" />
           <span class="weather-cell-temp">${Math.round(best.temperature)}°</span>
         </div>
         <div class="weather-cell-details">
