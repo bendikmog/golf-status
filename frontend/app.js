@@ -227,12 +227,27 @@ function buildFilterButtons(courses) {
   // Distance filter
   const postnummerInput = document.getElementById('postnummer-input')
   const distanceSelect = document.getElementById('distance-select')
+  const geoBtn = document.getElementById('geo-btn')
+
+  // Hvilken kilde posisjonen kommer fra: 'postnummer', 'geo', eller null.
+  // Dette gjør at vi kan skille "bruker har skrevet postnummer" fra
+  // "bruker har tillatt geolokasjon" — viktig fordi handlerne for de to
+  // inputene ellers ville overskrevet hverandre.
+  let positionSource = null
 
   async function updateDistanceFilter() {
     const nr = postnummerInput.value.trim()
     const dist = distanceSelect.value
 
+    // Hvis brukeren begynner å skrive et postnummer, overstyrer det en
+    // eventuell aktiv geolokasjon.
+    if (nr.length > 0 && positionSource === 'geo') {
+      positionSource = null
+      geoBtn.classList.remove('geo-btn-active')
+    }
+
     if (nr.length === 4 && dist) {
+      // --- Postnummer-modus ---
       try {
         postnummerInput.style.borderColor = '#d97706' // loading indicator
         const response = await fetch(`/api/postnummer/${nr}`)
@@ -241,6 +256,7 @@ function buildFilterButtons(courses) {
           userLat = data.lat
           userLon = data.lon
           maxDistance = parseInt(dist)
+          positionSource = 'postnummer'
           postnummerInput.style.borderColor = 'var(--green-main)'
           postnummerInput.title = data.poststed
         } else {
@@ -248,15 +264,21 @@ function buildFilterButtons(courses) {
           userLat = null
           userLon = null
           maxDistance = null
+          positionSource = null
         }
       } catch {
         postnummerInput.style.borderColor = '#dc2626'
       }
-    } else {
+    } else if (positionSource === 'geo' && dist) {
+      // --- Geo-modus: bruk eksisterende koordinater, bare oppdater avstand ---
+      maxDistance = parseInt(dist)
+    } else if (positionSource !== 'geo') {
+      // Verken gyldig postnummer eller aktiv geo → nullstill alt
       postnummerInput.style.borderColor = ''
       userLat = null
       userLon = null
       maxDistance = null
+      positionSource = null
     }
 
     applyFilters()
@@ -264,6 +286,53 @@ function buildFilterButtons(courses) {
 
   postnummerInput.addEventListener('input', updateDistanceFilter)
   distanceSelect.addEventListener('change', updateDistanceFilter)
+
+  // --- Geolocation ---
+  geoBtn.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      geoBtn.classList.add('geo-btn-error')
+      geoBtn.title = 'Nettleseren din støtter ikke posisjon. Bruk postnummer i stedet.'
+      return
+    }
+
+    geoBtn.classList.remove('geo-btn-error', 'geo-btn-active')
+    geoBtn.classList.add('geo-btn-loading')
+
+    navigator.geolocation.getCurrentPosition(
+      // Suksess
+      (position) => {
+        userLat = position.coords.latitude
+        userLon = position.coords.longitude
+        positionSource = 'geo'
+
+        // Tøm postnummer-feltet så det er tydelig hvilken kilde som er aktiv
+        postnummerInput.value = ''
+        postnummerInput.style.borderColor = ''
+        postnummerInput.title = ''
+
+        geoBtn.classList.remove('geo-btn-loading')
+        geoBtn.classList.add('geo-btn-active')
+        geoBtn.title = 'Posisjonen din er aktiv'
+
+        // Hvis avstand allerede er valgt, aktiver filteret med en gang
+        const dist = distanceSelect.value
+        if (dist) maxDistance = parseInt(dist)
+
+        applyFilters()
+      },
+      // Feil (avslått, timeout, ikke tilgjengelig)
+      () => {
+        geoBtn.classList.remove('geo-btn-loading')
+        geoBtn.classList.add('geo-btn-error')
+        geoBtn.title = 'Kunne ikke hente posisjon. Bruk postnummer i stedet.'
+      },
+      {
+        enableHighAccuracy: false,  // ~100m holder for km-filter; raskere + mindre batteri
+        timeout: 10000,
+        maximumAge: 300000,         // bruk cachet posisjon hvis < 5 min gammel
+      }
+    )
+  })
 
   // Nullstill-knappen: tømmer alle filtre og tekstfelt i én operasjon.
   // Bruker samme state som resten av filter-logikken fordi vi er inne i
@@ -287,6 +356,9 @@ function buildFilterButtons(courses) {
       userLat = null
       userLon = null
       maxDistance = null
+      positionSource = null
+      geoBtn.classList.remove('geo-btn-active', 'geo-btn-loading', 'geo-btn-error')
+      geoBtn.title = 'Bruk min posisjon'
 
       // Reset knappetilstander: "Alle" aktiv, resten ikke
       document.querySelectorAll('.filter-btn').forEach(b => {

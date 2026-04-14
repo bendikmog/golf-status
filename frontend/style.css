@@ -200,6 +200,36 @@ header p {
   border-color: var(--green-main);
 }
 
+/* Geolocation-knapp: ikon-knapp i samme stil som holes-toggle */
+.geo-btn {
+  padding: 7px 11px;
+  font-size: 14px;
+  line-height: 1;
+  background: #f9fafb;
+  border: 1.5px solid #d1d5db;
+  border-radius: 999px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.geo-btn:hover {
+  border-color: var(--green-light);
+}
+
+.geo-btn.geo-btn-loading {
+  border-color: #d97706;
+}
+
+.geo-btn.geo-btn-active {
+  background: var(--green-main);
+  border-color: var(--green-main);
+}
+
+.geo-btn.geo-btn-error {
+  border-color: #dc2626;
+}
+
 /* ============================================
    FILTER BAR
    Tinted box with status and county filters.
