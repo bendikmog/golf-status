@@ -702,3 +702,12 @@ header p {
   margin: 0 auto;
   line-height: 1.5;
 }
+
+.footer-contact {
+  font-size: 0.78rem;
+  color: var(--gray-muted);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
