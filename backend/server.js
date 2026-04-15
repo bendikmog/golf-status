@@ -254,8 +254,9 @@ app.use(helmet({
 
 app.use(compression())
 app.use(express.json())
-// Serves frontend files
-app.use(express.static(path.join(__dirname, '..', 'frontend')))
+// Serves frontend files — cache in browser for 1 hour. Ingen hash-et filnavn
+// ennå, så en deploy blir først synlig når cachen utløper (eller ved hard refresh).
+app.use(express.static(path.join(__dirname, '..', 'frontend'), { maxAge: '1h' }))
 // Serves logos from logo folder — cache in browser for 7 days
 app.use('/logos', express.static(path.join(__dirname, '..', 'logos'), { maxAge: '7d' }))
 
@@ -271,17 +272,24 @@ app.get('/api/courses', async (_req, res) => {
             await initialUpdatePromise
         }
 
-        // Add cache-age in response to see age of data
-        const cacheAgeSeconds = Math.round((Date.now() - cachedTime) / 1000)
+        // Cache-headere:
+        // - max-age=300: nettleseren bruker lokal kopi uten å spørre i 5 min
+        // - stale-while-revalidate=900: etter 5 min serveres stale instant
+        //   mens en bakgrunns-forespørsel fornyer cachen. Gir null opplevd
+        //   latency ved refresh i opptil 20 min.
+        // Last-Modified speiler når serverside-cachen sist ble oppdatert, så
+        // betingede GET-er (If-Modified-Since) kan svare 304 uten payload.
+        res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=900')
+        res.set('Last-Modified', new Date(cachedTime).toUTCString())
 
+        // Responsen må være stabil mellom cache-oppdateringer så nettleserens
+        // ETag/Last-Modified-sjekk kan gi 304. Derfor ingen felt som endres
+        // hvert sekund (cacheAgeSeconds, isUpdating) — frontend beregner
+        // cache-alder fra cachedAt selv ved behov.
         res.json({
-            //The actual data-array
             courses: cachedData,
-            //Metadata of cache - good for debugging
             meta: {
                 cachedAt: new Date(cachedTime).toISOString(),
-                cacheAgeSeconds,
-                isUpdating,
             }
         })
     } catch (error) {
