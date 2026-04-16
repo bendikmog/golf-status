@@ -14,7 +14,7 @@ const BASE = 'https://business-api.glfr.com/feeds/club-status/'
 
 async function scrapeGlfr(slug) {
   const feedUrl = BASE + slug
-  const response = await axios.get(feedUrl, { timeout: 10000 })
+  const response = await axios.get(feedUrl, { timeout: 25000 })
   const $ = cheerio.load(response.data, { xmlMode: true })
 
   const item = $('item').first()

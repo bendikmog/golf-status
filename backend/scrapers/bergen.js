@@ -59,7 +59,7 @@ async function scrape(url) {
 
   // Fallback: blog RSS feed (current year only)
   try {
-    const feedRes = await axios.get(url.replace(/\/?$/, '') + '/blog-feed.xml', { timeout: 10000 })
+    const feedRes = await axios.get(url.replace(/\/?$/, '') + '/blog-feed.xml', { timeout: 25000 })
     const $ = cheerio.load(feedRes.data, { xmlMode: true })
 
     const currentYear = new Date().getFullYear()

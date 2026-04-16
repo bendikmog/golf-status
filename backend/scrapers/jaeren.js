@@ -62,8 +62,8 @@ async function scrape(url) {
 
     // Fetch main page (driving range status) and blog (course status) in parallel
     const [mainRes, blogRes] = await Promise.allSettled([
-      axios.get(base, { timeout: 10000 }),
-      axios.get(base + '/nyheter?format=json', { timeout: 10000 }),
+      axios.get(base, { timeout: 25000 }),
+      axios.get(base + '/nyheter?format=json', { timeout: 25000 }),
     ])
 
     let mainResult = { courseStatus: 'unknown', drivingRange: 'unknown', statusText: null }
@@ -84,7 +84,7 @@ async function scrape(url) {
         const postHref = statusPost.fullUrl || statusPost.url || ''
         const postUrl = postHref.startsWith('http') ? postHref : base + postHref
         try {
-          const postRes = await axios.get(postUrl, { timeout: 10000 })
+          const postRes = await axios.get(postUrl, { timeout: 25000 })
           const $post = cheerio.load(postRes.data)
           blogResult = parseBlocks($post)
           // Capture first meaningful text block as status note even if status is unknown

@@ -15,7 +15,7 @@ async function scrape(url) {
 
   // Fallback: scrape homepage og:description and headings
   try {
-    const response = await axios.get(url, { timeout: 10000 })
+    const response = await axios.get(url, { timeout: 25000 })
     const $ = cheerio.load(response.data)
 
     let courseStatus = 'unknown'

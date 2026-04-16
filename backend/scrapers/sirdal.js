@@ -5,7 +5,7 @@ async function scrape(url) {
   try {
     // Status lives on a dedicated subpage
     const statusUrl = url.replace(/\/?$/, '') + '/banen-2/banen.html'
-    const response = await axios.get(statusUrl, { timeout: 10000 })
+    const response = await axios.get(statusUrl, { timeout: 25000 })
     const $ = cheerio.load(response.data)
 
     let courseStatus = 'unknown'

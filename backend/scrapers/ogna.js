@@ -3,7 +3,7 @@ const cheerio = require('cheerio')
 
 async function scrape(url) {
   try {
-    const response = await axios.get(url, { timeout: 10000 })
+    const response = await axios.get(url, { timeout: 25000 })
     const $ = cheerio.load(response.data)
 
     const table = $('table#eael-data-table-6c2ff753')

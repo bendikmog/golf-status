@@ -3,7 +3,7 @@ const cheerio = require('cheerio')
 
 async function scrape(url) {
   try {
-    const response = await axios.get(url, { timeout: 10000 })
+    const response = await axios.get(url, { timeout: 25000 })
     const $ = cheerio.load(response.data)
 
     let courseStatus = 'unknown'
@@ -23,7 +23,7 @@ async function scrape(url) {
     if (courseStatus === 'unknown') {
       const base = url.replace(/\/?$/, '')
       for (const path of ['/dalen-golf/', '/bane/']) {
-        const page = await axios.get(base + path, { timeout: 10000 }).catch(() => null)
+        const page = await axios.get(base + path, { timeout: 25000 }).catch(() => null)
         if (!page) continue
         const $p = cheerio.load(page.data)
         $p('h1, h2, h3, h4, p, li').each((_i, el) => {

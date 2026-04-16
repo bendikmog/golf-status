@@ -4,7 +4,7 @@ const cheerio = require('cheerio')
 async function scrape(url) {
   try {
     const statusUrl = url.replace(/\/?$/, '') + '/banestatus'
-    const response = await axios.get(statusUrl, { timeout: 10000 })
+    const response = await axios.get(statusUrl, { timeout: 25000 })
     const $ = cheerio.load(response.data)
 
     const courses = []

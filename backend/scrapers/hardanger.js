@@ -5,7 +5,7 @@ async function scrape(url) {
   try {
     // Status is published on /banen/ as free-text prose in a Divi text block
     const baneUrl = url.replace(/\/?$/, '') + '/banen/'
-    const response = await axios.get(baneUrl, { timeout: 10000 })
+    const response = await axios.get(baneUrl, { timeout: 25000 })
     const $ = cheerio.load(response.data)
 
     let courseStatus = 'unknown'

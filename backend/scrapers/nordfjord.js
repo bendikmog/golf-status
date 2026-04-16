@@ -3,7 +3,7 @@ const cheerio = require('cheerio')
 
 async function scrape(url) {
   try {
-    const feedRes = await axios.get(url.replace(/\/?$/, '') + '/feed/', { timeout: 10000 })
+    const feedRes = await axios.get(url.replace(/\/?$/, '') + '/feed/', { timeout: 25000 })
     const $ = cheerio.load(feedRes.data, { xmlMode: true })
 
     const currentYear = new Date().getFullYear()

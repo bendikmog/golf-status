@@ -4,7 +4,7 @@ const cheerio = require('cheerio')
 async function scrape(url) {
   try {
     // Stord has no dedicated status page — scan their Wix blog RSS for status posts
-    const feedRes = await axios.get(url.replace(/\/?$/, '') + '/blog-feed.xml', { timeout: 10000 })
+    const feedRes = await axios.get(url.replace(/\/?$/, '') + '/blog-feed.xml', { timeout: 25000 })
     const $ = cheerio.load(feedRes.data, { xmlMode: true })
 
     let courseStatus = 'unknown'
@@ -30,7 +30,7 @@ async function scrape(url) {
 
     // Fallback: check homepage rich text (Wix wixui-rich-text elements)
     if (courseStatus === 'unknown') {
-      const homeRes = await axios.get(url, { timeout: 10000 }).catch(() => null)
+      const homeRes = await axios.get(url, { timeout: 25000 }).catch(() => null)
       if (homeRes) {
         const $h = cheerio.load(homeRes.data)
         $h('.wixui-rich-text, [data-testid="richTextElement"]').each((_i, el) => {
