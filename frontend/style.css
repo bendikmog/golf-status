@@ -247,6 +247,19 @@ header p {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
+}
+
+/* Fade mot høyre så brukeren ser at chips scroller videre */
+.filter-box::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  height: 26px;
+  width: 28px;
+  background: linear-gradient(to right, rgba(240, 244, 241, 0), #f0f4f1);
+  pointer-events: none;
 }
 
 .filter-label {
@@ -294,6 +307,29 @@ header p {
   background: var(--green-main);
   color: white;
   border-color: var(--green-main);
+}
+
+/* Snarveisknapp: "Bare åpne" — eksklusiv, skiller seg visuelt fra chip-raden */
+.filter-btn--open-only {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-color: var(--green-main);
+  color: var(--green-main);
+  font-weight: 600;
+}
+
+.filter-btn--open-only .filter-btn-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38a169;
+  box-shadow: 0 0 4px rgba(56, 161, 105, 0.5);
+}
+
+.filter-btn--open-only.active .filter-btn-dot {
+  background: white;
+  box-shadow: none;
 }
 
 /* ============================================
@@ -386,18 +422,24 @@ header p {
   font-weight: 500;
 }
 
-/* Colored dot in the top-right of each card header */
-.status-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
+/* Status-pill øverst til høyre i kort-headeren — tekst + farge gir
+   raskere gjenkjenning enn en ren farget prikk, og fungerer bedre for
+   fargeblinde brukere. */
+.status-pill {
   margin-left: auto;
   flex-shrink: 0;
+  padding: 3px 11px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  color: white;
 }
 
-.status-dot.green  { background: #38a169; box-shadow: 0 0 6px rgba(56, 161, 105, 0.5); }
-.status-dot.yellow { background: #d69e2e; box-shadow: 0 0 6px rgba(214, 158, 46, 0.5); }
-.status-dot.red    { background: #e53e3e; box-shadow: 0 0 6px rgba(229, 62, 62, 0.5); }
+.status-pill.green  { background: #38a169; }
+.status-pill.yellow { background: #d69e2e; }
+.status-pill.red    { background: #e53e3e; }
 
 /* Free-text status message from the club, with a link to their site */
 .status-note {

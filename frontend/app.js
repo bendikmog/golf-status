@@ -130,6 +130,7 @@ function buildFilterButtons(courses) {
     <div class="filter-box">
       <span class="filter-label">Status</span>
       <div class="filter-group">
+        <button class="filter-btn filter-btn--open-only" data-filter="status" data-value="green" data-exclusive="true"><span class="filter-btn-dot"></span>Bare åpne</button>
         <button class="filter-btn active" data-filter="status" data-value="all">Alle</button>
         <button class="filter-btn" data-filter="status" data-value="green">🟢 Åpen</button>
         <button class="filter-btn" data-filter="status" data-value="yellow">🟡 Delvis åpen</button>
@@ -189,7 +190,12 @@ function buildFilterButtons(courses) {
     const activeSet = filter === 'status' ? activeStatuses : activeCounties
     const groupSelector = `[data-filter="${filter}"]`
 
-    if (value === 'all') {
+    if (btn.dataset.exclusive === 'true') {
+      // Snarveisknapp (f.eks. "Bare åpne"): sett kun denne verdien aktiv,
+      // overstyrer evt. multi-seleksjon i chip-raden.
+      activeSet.clear()
+      activeSet.add(value)
+    } else if (value === 'all') {
       // Clicking "Alle" resets to only "Alle" active
       activeSet.clear()
       activeSet.add('all')
@@ -205,9 +211,15 @@ function buildFilterButtons(courses) {
       }
     }
 
-    // Update button active states
+    // Update button active states. Eksklusive knapper er kun "aktive" når
+    // settet inneholder nøyaktig deres verdi — ellers ville de lyst opp
+    // hver gang chip-raden hadde den samme verdien i multi-seleksjon.
     document.querySelectorAll(groupSelector).forEach(b => {
-      b.classList.toggle('active', activeSet.has(b.dataset.value))
+      const isExclusive = b.dataset.exclusive === 'true'
+      const active = isExclusive
+        ? activeSet.size === 1 && activeSet.has(b.dataset.value)
+        : activeSet.has(b.dataset.value)
+      b.classList.toggle('active', active)
     })
 
     applyFilters()
@@ -479,6 +491,12 @@ function buildCard(course) {
       ? 'Banen er stengt'
       : 'Delvis åpen eller status ukjent'
 
+  const statusPillText = overallStatus === 'green'
+    ? 'Åpen'
+    : overallStatus === 'red'
+      ? 'Stengt'
+      : 'Delvis'
+
   const allCourseStatuses = course.status?.courses || []
 
   const buildRow = c => {
@@ -564,7 +582,7 @@ function buildCard(course) {
         : ''
       }
       <h2>${esc(course.name)}</h2>
-      <div class="status-dot ${esc(overallStatus)}" role="img" aria-label="${esc(statusLabel)}" title="${esc(statusLabel)}"></div>
+      <div class="status-pill ${esc(overallStatus)}" role="img" aria-label="${esc(statusLabel)}" title="${esc(statusLabel)}">${esc(statusPillText)}</div>
     </div>
 
     <div class="course-card-body">
