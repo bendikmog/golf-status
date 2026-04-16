@@ -516,8 +516,8 @@ function buildCard(course) {
   const allUnknown = allCourseStatuses.every(c => c.status === 'unknown')
     && (course.status?.drivingRange === 'unknown' || course.status?.drivingRange == null)
   const isFacebook = course.url && course.url.includes('facebook.com')
-  const noStatusInfo = allUnknown && !course.status.statusText
-  const statusNoteText = course.status.statusText
+  const noStatusInfo = allUnknown && !course.status?.statusText
+  const statusNoteText = course.status?.statusText
     || (isFacebook && allUnknown
         ? (course.facebookNote
             ? `For hyppigere oppdateringer, følg klubben på Facebook.`
