@@ -406,15 +406,25 @@ function setActiveFilter(region) {
 //Build and display course cards
 function renderCourses(courses) {
     const grid = document.getElementById('course-grid')
-
-    //Clear whatever is currently in the grid
     grid.innerHTML = ''
 
-    //Build a card for each course
-    courses.forEach(course => {
-        const card = buildCard(course)
-        grid.appendChild(card)
-    })
+    // Første batch rendres synkront så det brukeren ser over folden dukker opp
+    // umiddelbart etter at data har kommet inn. Resten rendres i neste
+    // animation frame slik at nettleseren rekker å paint-e første batch før
+    // vi blokkerer main thread med de resterende kortene.
+    const FIRST_BATCH = 12
+
+    const renderBatch = (subset) => {
+        const fragment = document.createDocumentFragment()
+        subset.forEach(course => fragment.appendChild(buildCard(course)))
+        grid.appendChild(fragment)
+    }
+
+    renderBatch(courses.slice(0, FIRST_BATCH))
+
+    if (courses.length > FIRST_BATCH) {
+        requestAnimationFrame(() => renderBatch(courses.slice(FIRST_BATCH)))
+    }
 }
 
 // Returns true for real courses (18- or 9-hole), false for training areas

@@ -321,6 +321,11 @@ header p {
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   transition: box-shadow 0.2s ease;
+  /* Nettleseren hopper over layout/paint for kort utenfor viewport. Vi
+     reserverer ~450px plass så scrollbaren ikke hopper; browseren husker
+     den faktiske høyden etter at et kort først er blitt rendret. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 450px;
 }
 
 .course-card:hover {
