@@ -32,6 +32,7 @@ const strategies = {
   'tjome':                 require('./tjome.js'),
   'kongsvinger':           require('./kongsvinger.js'),
   'sola':                  require('./sola.js'),
+  'solum':                 require('./solum.js'),
   'sgk':                   require('./sgk.js'),
   'egersund':              require('./egersund.js'),
   'haugesund':             require('./haugesund.js'),

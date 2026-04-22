@@ -1731,7 +1731,7 @@ const courses = [
         url: 'https://www.solumgolf.club',
         lat: 59.4675,
         lon: 10.3106,
-        scrapeMethod: 'squarespace-news',
+        scrapeMethod: 'solum',
         region: 'Østlandet',
         county: 'Vestfold',
         timezone: 'Europe/Oslo',

@@ -27,7 +27,7 @@ const PORT = 3000
 // ===================================
 
 // Puppeteer scrapers are slow - split them from the rest so main cache can be served faster
-const PUPPETEER_METHODS = new Set(['sola', 'coursecond-widget'])
+const PUPPETEER_METHODS = new Set(['sola', 'coursecond-widget', 'solum'])
 
 // cachedData holds last result from scrape (all courses merged)
 let cachedData = null
