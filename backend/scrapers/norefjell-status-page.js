@@ -1,55 +1,54 @@
-const axios = require('axios')
-const cheerio = require('cheerio')
+const { getBrowser } = require('./browser')
 
+// Norefjell sin side er en React SPA — innholdet rendres av JavaScript
+// etter at HTML-en er lastet. Derfor må vi bruke Puppeteer (en ekte nettleser)
+// for å kunne lese teksten. Axios + cheerio ville bare sett en tom <div id="root">.
+//
+// Statusen vises på hovedsiden under seksjonen "OPPDATERT INFO / Baneforhold",
+// med teksten "Banen er åpen" eller lignende, etterfulgt av en beskrivelse.
 async function scrape(url) {
+  let page
   try {
-    const response = await axios.get(url)
-    const $ = cheerio.load(response.data)
+    const browser = await getBrowser()
+    page = await browser.newPage()
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 })
 
-    // Norefjell has a dedicated status page with free text in an article element
-    const article = $('article, .entry-content, main .content, .post-content')
+    // Vent til statusteksten er rendret av React
+    await page.waitForFunction(() => {
+      return /banen er (åpen|stengt|vinterstengt)/i.test(document.body.innerText)
+    }, { timeout: 8000 }).catch(() => {})
 
-    if (article.length === 0) {
-      return { courses: [], drivingRange: 'unknown', statusText: null }
+    const bodyText = await page.evaluate(() => document.body.innerText)
+
+    const match = bodyText.match(/banen er (åpen|stengt|vinterstengt)/i)
+    if (!match) return { courses: [], drivingRange: 'unknown', statusText: null }
+
+    const isOpen = /åpen/i.test(match[0])
+    const courseStatus = isOpen ? 'open' : 'closed'
+
+    // Prøv å plukke beskrivelses-linjen rett etter statusen — den har typisk
+    // nyttig info som "Green 1 er allerede fin etter dressing" e.l.
+    const lines = bodyText.split('\n').map(l => l.trim()).filter(Boolean)
+    const statusLineIndex = lines.findIndex(l => /^banen er (åpen|stengt|vinterstengt)/i.test(l))
+    let statusText = null
+    if (statusLineIndex >= 0) {
+      const nextLine = lines[statusLineIndex + 1]
+      if (nextLine && nextLine.length > 20 && nextLine.length < 300) {
+        statusText = nextLine
+      }
     }
 
-    // Get the text and clean it up
-    const statusText = article.text()
-      .replace(/Informasjon om banestatus/gi, '')
-      .replace(/\n+/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim() || null
-
-    // Try to detect open/closed from the text
-    const lowerText = statusText?.toLowerCase() || ''
-
-    const courseOpen = lowerText.includes('banen er åpen') ||
-                       lowerText.includes('banen åpner') ||
-                       lowerText.includes('åpner banen') ||
-                       lowerText.includes('banen er open')
-
-    const courseClosed = lowerText.includes('banen er stengt') ||
-                         lowerText.includes('banen stengt')
-
-    const rangeOpen = lowerText.includes('rangen er åpen') ||
-                      lowerText.includes('range åpner') ||
-                      lowerText.includes('driving range åpner') ||
-                      lowerText.includes('rangen er open') ||
-                      lowerText.includes('range open')
-
-    const rangeClosed = lowerText.includes('rangen er stengt') ||
-                        lowerText.includes('range stengt')
-
     return {
-      courses: [{ name: 'Golfbanen', status: courseOpen ? 'open' : courseClosed ? 'closed' : 'unknown' }],
-      drivingRange: rangeOpen ? 'open' : rangeClosed ? 'closed' : 'unknown',
-      // Show the free text as a note on the card
+      courses: [{ name: 'Golfbanen', status: courseStatus }],
+      drivingRange: 'unknown',
       statusText,
     }
 
   } catch (error) {
     console.error(`Norefjell status page scrape failed for ${url}:`, error.message)
     return { courses: [], drivingRange: 'unknown', statusText: null }
+  } finally {
+    if (page) await page.close().catch(() => {})
   }
 }
 

@@ -1270,7 +1270,7 @@ const courses = [
         id: 'norefjell',
         name: 'Norefjell Golfklubb',
         logo: '/logos/norefjell.webp',
-        url: 'https://www.norefjell-golf.no/innstillinger/banestatus',
+        url: 'https://www.norefjell-golf.no/',
         lat: 60.1908,
         lon: 9.6039,
         scrapeMethod: 'norefjell-status-page',
