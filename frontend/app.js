@@ -452,26 +452,46 @@ function isRealCourse(name) {
          !n.includes('range')
 }
 
-// Evaluate status for card - used in colored circle
+// Evaluate status for card - used in the status pill.
+// Returns 'green' | 'yellow' | 'red' | 'gray'.
+// - green: minst én hovedbane er åpen
+// - yellow: "noe kan fortsatt brukes" — enten fordi range er åpen (eller ukjent
+//   mens hovedbanen er stengt, slik at range kanskje er et alternativ), eller
+//   fordi et treningsområde er bekreftet åpent
+// - red: alle hovedbaner er bekreftet stengt OG range er bekreftet stengt
+// - gray: ingen bekreftet "open" eller "closed" på hovedbanen, og ingenting annet åpent
 function getOverallStatus(course) {
-  if (!course.status?.courses) return 'yellow'
-  const courseList = course.status.courses
+  const courseList = course.status?.courses
+  if (!courseList || courseList.length === 0) return 'gray'
 
   const realCourses = courseList.filter(c => isRealCourse(c.name))
-  const trainingOnly = realCourses.length === 0 && courseList.length > 0
+  const trainingAreas = courseList.filter(c => !isRealCourse(c.name))
+  const range = course.status.drivingRange
 
-  // Green — at least one REAL course is open
-  const anyRealOpen = realCourses.some(c => c.status === 'open')
-  if (anyRealOpen) return 'green'
+  // 🟢 Hovedbanen er åpen
+  if (realCourses.some(c => c.status === 'open')) return 'green'
 
-  // Red — all real courses closed AND range closed
-  // (or only training facilities exist and range is closed)
+  // Alle hovedbaner bekreftet stengt
   const allRealClosed = realCourses.length > 0 && realCourses.every(c => c.status === 'closed')
-  const rangeClosed = course.status.drivingRange === 'closed'
-  if ((allRealClosed || trainingOnly) && rangeClosed) return 'red'
+  if (allRealClosed) {
+    if (range === 'closed') return 'red'
+    // Range åpen ELLER ukjent → gul: range kan fortsatt være et alternativ
+    return 'yellow'
+  }
 
-  // Yellow — training areas open, range open, or unknown status
-  return 'yellow'
+  // Klubben har bare treningsområder (ingen "ekte" hovedbane)
+  const trainingOnly = realCourses.length === 0 && courseList.length > 0
+  if (trainingOnly) {
+    if (range === 'closed') return 'red'
+    return 'yellow'
+  }
+
+  // Hovedbanen er ukjent. Noe annet bekreftet åpent → gul
+  if (range === 'open') return 'yellow'
+  if (trainingAreas.some(c => c.status === 'open')) return 'yellow'
+
+  // ⚪ Ingen bekreftet åpent, hovedbane ukjent
+  return 'gray'
 }
 
 // Build a single course card element
@@ -485,17 +505,14 @@ function buildCard(course) {
   // Tekstlig ekvivalent av statusfargen — brukes av skjermlesere og som tooltip.
   // Dette er tilgjengelighet (a11y): fargeblinde og blinde brukere får
   // ikke informasjon fra en ren farget prikk.
-  const statusLabel = overallStatus === 'green'
-    ? 'Banen er åpen'
-    : overallStatus === 'red'
-      ? 'Banen er stengt'
-      : 'Delvis åpen eller status ukjent'
-
-  const statusPillText = overallStatus === 'green'
-    ? 'Åpen'
-    : overallStatus === 'red'
-      ? 'Stengt'
-      : 'Delvis'
+  const statusTexts = {
+    green:  { label: 'Banen er åpen',            pill: 'Åpen' },
+    red:    { label: 'Banen er stengt',          pill: 'Stengt' },
+    yellow: { label: 'Delvis åpen',              pill: 'Delvis' },
+    gray:   { label: 'Status ikke tilgjengelig', pill: 'Ingen info' },
+  }
+  const statusLabel = statusTexts[overallStatus].label
+  const statusPillText = statusTexts[overallStatus].pill
 
   const allCourseStatuses = course.status?.courses || []
 

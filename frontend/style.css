@@ -440,6 +440,7 @@ header p {
 .status-pill.green  { background: #38a169; }
 .status-pill.yellow { background: #d69e2e; }
 .status-pill.red    { background: #e53e3e; }
+.status-pill.gray   { background: #9ca3af; }
 
 /* Free-text status message from the club, with a link to their site */
 .status-note {
