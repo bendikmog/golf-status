@@ -113,13 +113,13 @@ async function scrapeCourse(course) {
     return {
       courses: [{ name: 'Golfbanen', status: 'unknown' }],
       drivingRange: 'unknown',
-      statusText: course.statusNote || null,
+      statusText: course.statusTextOverride || null,
     }
   }
 
   if (course.scrapeMethod === 'glfr') {
     const result = await scrapeGlfr(course.glfrSlug)
-    if (course.statusNote) result.statusText = course.statusNote
+    if (course.statusTextOverride) result.statusText = course.statusTextOverride
     return result
   }
 
@@ -147,8 +147,8 @@ async function scrapeCourse(course) {
     result.courses.sort((a, b) => mainCourseScore(a.name) - mainCourseScore(b.name))
   }
 
-  if (course.statusNote) {
-    result.statusText = course.statusNote
+  if (course.statusTextOverride) {
+    result.statusText = course.statusTextOverride
   }
 
   return result
