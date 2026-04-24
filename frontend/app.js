@@ -126,6 +126,11 @@ function buildFilterButtons(courses) {
 
   const counties = [...new Set(courses.map(c => c.county).filter(Boolean))].sort()
 
+  // Debug-modus: låses opp med ?debug=1 i URL-en. Viser en ekstra filter-knapp
+  // for "Ingen info"-baner slik at Bendik raskt kan se hvilke scrapere som
+  // muligens trenger vedlikehold. Skjult for vanlige brukere.
+  const isDebug = new URLSearchParams(location.search).has('debug')
+
   filterContainer.innerHTML = `
     <div class="filter-box">
       <span class="filter-label">Status</span>
@@ -135,6 +140,7 @@ function buildFilterButtons(courses) {
         <button class="filter-btn" data-filter="status" data-value="green">🟢 Åpen</button>
         <button class="filter-btn" data-filter="status" data-value="yellow">🟡 Delvis åpen</button>
         <button class="filter-btn" data-filter="status" data-value="red">🔴 Stengt</button>
+        ${isDebug ? `<button class="filter-btn" data-filter="status" data-value="gray">⚪ Ingen info</button>` : ''}
       </div>
     </div>
     <div class="filter-box">
