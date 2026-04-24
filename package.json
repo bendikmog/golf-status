@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
-    "optimize-logos": "node scripts/optimize-logos.js"
+    "optimize-logos": "node scripts/optimize-logos.js",
+    "failing-courses": "node scripts/failing-courses.js"
   },
   "keywords": [],
   "author": "",
