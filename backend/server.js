@@ -342,6 +342,15 @@ app.get('/api/postnummer/:nr', async (req, res) => {
 // (8 timer), så 12 timer gir margin.
 const MAX_CACHE_AGE_HOURS = 12
 
+// Samme regel som `allUnknown` i frontend/app.js: sann når alle baner har
+// status 'unknown' og drivingrangen er 'unknown' eller mangler. Er status
+// null (skraperen feilet), blir listen tom og every() gir true.
+function isAllUnknown(course) {
+    const courseStatuses = course.status?.courses || []
+    return courseStatuses.every(c => c.status === 'unknown')
+        && (course.status?.drivingRange === 'unknown' || course.status?.drivingRange == null)
+}
+
 // Brukes av oppetidsovervåking (f.eks. UptimeRobot) og hosting-plattformen.
 // Svarer 200 når serveren kjører OG har ferske data, ellers 503 slik at
 // overvåkingen varsler. Kaller aldri scrapere — den skal være rask og billig.
@@ -353,6 +362,10 @@ app.get('/health', (_req, res) => {
     const isStale = cacheAgeSeconds !== null && cacheAgeSeconds > MAX_CACHE_AGE_HOURS * 60 * 60
     const status = isEmpty || isStale ? 'degraded' : 'ok'
 
+    // Klubber uten kjent status. Kun til informasjon — påvirker ikke status,
+    // siden mange klubber helt normalt er 'unknown' utenfor sesong.
+    const unknownIds = (cachedData || []).filter(isAllUnknown).map(c => c.id)
+
     // Helsesjekken skal alltid vise sanntid, aldri en cachet kopi
     res.set('Cache-Control', 'no-store')
     res.status(status === 'ok' ? 200 : 503).json({
@@ -363,6 +376,8 @@ app.get('/health', (_req, res) => {
             cachedAt: cachedTime ? new Date(cachedTime).toISOString() : null,
             ageSeconds: cacheAgeSeconds,
             isUpdating,
+            unknownCount: unknownIds.length,
+            unknownIds,
         },
     })
 })
