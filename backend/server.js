@@ -337,9 +337,10 @@ app.get('/api/postnummer/:nr', async (req, res) => {
 // Endpoints - helsesjekk
 // =====================================
 
-// Største lovlige alder på cachen før vi regner den som "stale".
-// Lengste planlagte pause er 23:00 → 07:00 (8 timer), så 12 timer gir margin.
-const MAX_CACHE_AGE_MS = 12 * 60 * 60 * 1000
+// Største lovlige alder på cachen før /health svarer "degraded".
+// Lengste planlagte pause mellom cron-oppdateringene er 23:00 → 07:00
+// (8 timer), så 12 timer gir margin.
+const MAX_CACHE_AGE_HOURS = 12
 
 // Brukes av oppetidsovervåking (f.eks. UptimeRobot) og hosting-plattformen.
 // Svarer 200 når serveren kjører OG har ferske data, ellers 503 slik at
@@ -347,9 +348,10 @@ const MAX_CACHE_AGE_MS = 12 * 60 * 60 * 1000
 app.get('/health', (_req, res) => {
     const cacheAgeSeconds = cachedTime ? Math.round((Date.now() - cachedTime) / 1000) : null
 
-    let status = 'ok'
-    if (!cachedData) status = 'starting'
-    else if (cacheAgeSeconds * 1000 > MAX_CACHE_AGE_MS) status = 'stale'
+    const courseCount = cachedData ? cachedData.length : 0
+    const isEmpty = courseCount === 0
+    const isStale = cacheAgeSeconds !== null && cacheAgeSeconds > MAX_CACHE_AGE_HOURS * 60 * 60
+    const status = isEmpty || isStale ? 'degraded' : 'ok'
 
     // Helsesjekken skal alltid vise sanntid, aldri en cachet kopi
     res.set('Cache-Control', 'no-store')
@@ -357,7 +359,7 @@ app.get('/health', (_req, res) => {
         status,
         uptimeSeconds: Math.round(process.uptime()),
         cache: {
-            courseCount: cachedData ? cachedData.length : 0,
+            courseCount,
             cachedAt: cachedTime ? new Date(cachedTime).toISOString() : null,
             ageSeconds: cacheAgeSeconds,
             isUpdating,
