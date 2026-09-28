@@ -14,6 +14,13 @@ const { scrapeCourse } = require('./scrapers')
 const { getWeather} = require('./weather')
 const axios = require('axios')
 
+// Sikkerhetsnett: axios venter i utgangspunktet uendelig på svar. Henger én
+// klubbside, blir Promise.all i fetchCoursesData aldri ferdig, isUpdating står
+// fast på true, og alle senere oppdateringer hoppes over til neste restart.
+// Grensen er bevisst romslig — scrapere som har egen timeout (25s, se commit
+// b25b563) beholder den, siden en timeout per kall overstyrer denne standarden.
+axios.defaults.timeout = 60000
+
 // Merk: Vi slår IKKE av TLS-validering globalt her. Hvis en enkelt scraper
 // må snakke med en klubbside med utløpt/selvsignert sertifikat, skal den
 // lage sin egen lokale httpsAgent — se backend/scrapers/generic.js for
