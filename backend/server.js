@@ -333,6 +333,38 @@ app.get('/api/postnummer/:nr', async (req, res) => {
     }
 })
 
+// =====================================
+// Endpoints - helsesjekk
+// =====================================
+
+// Største lovlige alder på cachen før vi regner den som "stale".
+// Lengste planlagte pause er 23:00 → 07:00 (8 timer), så 12 timer gir margin.
+const MAX_CACHE_AGE_MS = 12 * 60 * 60 * 1000
+
+// Brukes av oppetidsovervåking (f.eks. UptimeRobot) og hosting-plattformen.
+// Svarer 200 når serveren kjører OG har ferske data, ellers 503 slik at
+// overvåkingen varsler. Kaller aldri scrapere — den skal være rask og billig.
+app.get('/health', (_req, res) => {
+    const cacheAgeSeconds = cachedTime ? Math.round((Date.now() - cachedTime) / 1000) : null
+
+    let status = 'ok'
+    if (!cachedData) status = 'starting'
+    else if (cacheAgeSeconds * 1000 > MAX_CACHE_AGE_MS) status = 'stale'
+
+    // Helsesjekken skal alltid vise sanntid, aldri en cachet kopi
+    res.set('Cache-Control', 'no-store')
+    res.status(status === 'ok' ? 200 : 503).json({
+        status,
+        uptimeSeconds: Math.round(process.uptime()),
+        cache: {
+            courseCount: cachedData ? cachedData.length : 0,
+            cachedAt: cachedTime ? new Date(cachedTime).toISOString() : null,
+            ageSeconds: cacheAgeSeconds,
+            isUpdating,
+        },
+    })
+})
+
 // Sentry Express-feilhåndtering — MÅ registreres etter alle routes,
 // men før andre error-middleware. Fanger uventede feil i handlers.
 Sentry.setupExpressErrorHandler(app)
