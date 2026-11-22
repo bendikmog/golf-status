@@ -11,6 +11,7 @@ const path = require('path')
 const cron = require('node-cron')
 const courses = require('./courses')
 const { scrapeCourse } = require('./scrapers')
+const { closeBrowser } = require('./scrapers/browser')
 const { getWeather} = require('./weather')
 const axios = require('axios')
 
@@ -34,7 +35,7 @@ const PORT = 3000
 // ===================================
 
 // Puppeteer scrapers are slow - split them from the rest so main cache can be served faster
-const PUPPETEER_METHODS = new Set(['sola', 'coursecond-widget', 'solum', 'norefjell-status-page'])
+const PUPPETEER_METHODS = new Set(['sola', 'coursecond-widget', 'solum', 'norefjell-status-page', 'bergen'])
 
 // cachedData holds last result from scrape (all courses merged)
 let cachedData = null
@@ -151,6 +152,8 @@ async function updatePuppeteerCache() {
     } catch (error) {
         console.error('Puppeteer cache update failed:', error.message)
     } finally {
+        // Lukk Chrome til neste runde — ellers bruker den minne døgnet rundt
+        await closeBrowser()
         isUpdating = false
     }
 }
